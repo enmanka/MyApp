@@ -49,7 +49,7 @@
 				<view class="box3" v-show="navId=='register'">
 					<view class="items">
 						<uni-icons type="person" size="20" style="margin-right:16rpx ;color: #C7D4DD;"></uni-icons>
-						<input class="uni-input" placeholder="请输入电话号码" v-model="submitParams.phone"
+						<input class="uni-input" placeholder="请输入电话号码" v-model="registerParams.username"
 							@input="checkPhone" />
 					</view>
 					<view class="items" style="margin-top: 30rpx;justify-content: space-between;">
@@ -72,7 +72,7 @@
 						<view class="" style="display: flex;justify-content: center;">
 							<image src="../static/login/lock.png" mode="widthFix"
 								style="width: 40rpx;margin-right:16rpx ;"></image>
-							<input class="uni-input input2" placeholder="请输入短信验证码" v-model="submitParams.smsCode"
+							<input class="uni-input input2" placeholder="请输入短信验证码" v-model="registerParams.smsCode"
 								:disabled="!canInputYZM" />
 						</view>
 						<view class="yzm" @click="getYZM(yanzhengma)" :class="{ disabled: !canGetYZM }">{{yanzhengma}}
@@ -126,9 +126,7 @@
 				yanzhengma: '获取验证码',
 				submitParams: {
 					username: "", // 登录电话号码
-					password: "", // 登录密码
-					phone: "",
-					smsCode: "",
+					password: "" // 登录密码
 				},
 				registerParams: {
 					username: "", // 注册电话号码
@@ -144,7 +142,7 @@
 				this.navId = value;
 			},
 			checkPhone() {
-				this.canGetYZM = this.submitParams.phone !== "";
+				this.canGetYZM = this.registerParams.username !== "";
 			},
 			// 获取验证码
 			getYZM() {
@@ -161,6 +159,7 @@
 							}
 						}, 1000);
 					}
+					console.log(this.registerParams.username);
 				}
 			},
 			// 登录逻辑
@@ -186,6 +185,49 @@
 						duration: 2000
 					});
 				}
+				// if (username === '' || password === '') {
+				// 	uni.showToast({
+				// 		title: '请输入完整信息',
+				// 		icon: 'none',
+				// 		duration: 2000
+				// 	});
+				// 	return;
+				// }
+				// // 调用后端接口
+				// uni.request({
+				// 	url: 'https://your-backend-url.com/api/login', // 后端登录接口地址
+				// 	method: 'POST',
+				// 	data: {
+				// 		phone: username, // 传递电话号码
+				// 		password: password // 传递密码
+				// 	},
+				// 	success: (res) => {
+				// 		if (res.data.code === 200) { // 假设后端返回的状态码是200表示成功
+				// 			uni.showToast({
+				// 				title: '登录成功',
+				// 				icon: 'success',
+				// 				duration: 2000
+				// 			});
+				// 			// 登录成功后跳转到主页
+				// 			uni.navigateTo({
+				// 				url: '/pages/home'
+				// 			});
+				// 		} else {
+				// 			uni.showToast({
+				// 				title: res.data.message || '登录失败',
+				// 				icon: 'none',
+				// 				duration: 2000
+				// 			});
+				// 		}
+				// 	},
+				// 	fail: () => {
+				// 		uni.showToast({
+				// 			title: '网络错误',
+				// 			icon: 'none',
+				// 			duration: 2000
+				// 		});
+				// 	}
+				// });
 			},
 			// 注册逻辑
 			register() {
@@ -201,6 +243,7 @@
 						icon: 'none',
 						duration: 2000
 					});
+					console.log(smsCode);
 				} else if (password !== confirmPassword) {
 					uni.showToast({
 						title: '两次密码不一致',
@@ -218,6 +261,58 @@
 						duration: 2000
 					});
 				}
+				// if (username === '' || password === '' || confirmPassword === '' || smsCode === '') {
+				// 	uni.showToast({
+				// 		title: '请输入完整信息',
+				// 		icon: 'none',
+				// 		duration: 2000
+				// 	});
+				// 	return;
+				// }
+				// else if (password !== confirmPassword) {
+				// 	uni.showToast({
+				// 		title: '两次密码不一致',
+				// 		icon: 'none',
+				// 		duration: 2000
+				// 	});
+				// 	return;
+				// }
+				// // 调用后端接口
+				// uni.request({
+				// 	url: 'https://your-backend-url.com/api/register', // 后端注册接口地址
+				// 	method: 'POST',
+				// 	data: {
+				// 		phone: username, // 传递电话号码
+				// 		password: password, // 传递密码
+				// 		smsCode: smsCode // 传递短信验证码
+				// 	},
+				// 	success: (res) => {
+				// 		if (res.data.code === 200) { // 假设后端返回的状态码是200表示成功
+				// 			uni.showToast({
+				// 				title: '注册成功',
+				// 				icon: 'success',
+				// 				duration: 2000
+				// 			});
+				// 			// 注册成功后跳转到主页
+				// 			uni.navigateTo({
+				// 				url: '/pages/home'
+				// 			});
+				// 		} else {
+				// 			uni.showToast({
+				// 				title: res.data.message || '注册失败',
+				// 				icon: 'none',
+				// 				duration: 2000
+				// 			});
+				// 		}
+				// 	},
+				// 	fail: () => {
+				// 		uni.showToast({
+				// 			title: '网络错误',
+				// 			icon: 'none',
+				// 			duration: 2000
+				// 		});
+				// 	}
+				// });
 			},
 			// 展示用户协议
 			showUserAgreement() {
