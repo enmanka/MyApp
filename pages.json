@@ -1,25 +1,42 @@
 {
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
-		{
-			"path": "pages/login",
-			"style": {
-				"navigationBarTitleText": "登录",
-				"enablePullDownRefresh": false,
-				"navigationStyle":"custom"
-			}
-		},
-		{
-		      "path": "pages/home",  // 这是home.vue的路径
-		      "style": {
-		        "navigationBarTitleText": "首页"
-		      }
-		}
-	],
-	"globalStyle": {
-		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
-	},
-	"uniIdRouter": {}
+  "pages": [
+    {
+      "path": "pages/login",
+      "style": {
+        "navigationBarTitleText": "登录",
+        "enablePullDownRefresh": false,
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/home",
+      "style": {
+        "navigationBarTitleText": "首页"
+      }
+    },
+    {
+      "path": "pages/life/index",
+      "style": {
+        "navigationBarTitleText": "智慧生活"
+      }
+    },
+    {
+      "path": "pages/study/index",
+      "style": {
+        "navigationBarTitleText": "智慧助学"
+      }
+    },
+    {
+      "path": "pages/person/index",
+      "style": {
+        "navigationBarTitleText": "个人主页"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "uni-app",
+    "navigationBarBackgroundColor": "#F8F8F8",
+    "backgroundColor": "#F8F8F8"
+  }
 }
