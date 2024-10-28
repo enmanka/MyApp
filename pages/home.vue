@@ -1,3 +1,4 @@
+
 <template>
   <div class="homepage">
     <div class="content">

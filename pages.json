@@ -31,7 +31,13 @@
       "style": {
         "navigationBarTitleText": "个人主页"
       }
-    }
+    },
+	{
+	  "path": "pages/person/persondata",
+	  "style": {
+	    "navigationBarTitleText": "个人资料"
+	  }
+	}
   ],
   "globalStyle": {
     "navigationBarTextStyle": "black",

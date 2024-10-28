@@ -1,17 +1,21 @@
+// 在 App.vue 文件中
 <script>
+	globalData: {
+		userId: '' // 在全局作用域下定义 userId
+	}
 	export default {
-		onLaunch: function() {
-			console.log('App Launch')
+		onLaunch() {
+			console.log('App Launch') // 确认 App 启动时触发
 		},
-		onShow: function() {
+		onShow() {
 			console.log('App Show')
 		},
-		onHide: function() {
+		onHide() {
 			console.log('App Hide')
 		}
 	}
 </script>
 
 <style>
-	/*每个页面公共css */
+	/* 每个页面的公共 css */
 </style>

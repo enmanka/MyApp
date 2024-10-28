@@ -113,6 +113,11 @@
 		privacyPolicy
 	} from '@/static/login/agreements.js';
 	export default {
+		onLoad() {
+			// 初始化 userId
+			getApp().globalData.userId = '1'; // 初始 userId
+			console.log('User ID initialized:', getApp().globalData.userId);
+		},
 		data() {
 			return {
 				userAgreement: '',
@@ -162,7 +167,7 @@
 			// 		console.log(this.registerParams.username);
 			// 	}
 			// },
-			
+
 			// 登录逻辑
 			login() {
 				const {
@@ -175,8 +180,8 @@
 						icon: 'none',
 						duration: 2000
 					});
-				} 
-			
+				}
+
 				// 调用后端接口
 				uni.request({
 					url: 'http://localhost:3000/login', // 后端登录接口地址
@@ -185,9 +190,14 @@
 						username: username, // 传递电话号码
 						password: password // 传递密码
 					},
-					
+
 					success: (res) => {
 						if (res.data.code === 200) { // 假设后端返回的状态码是200表示成功
+							// 假设后端返回的用户 id 在 res.data.data.userId 中
+							const userId = res.data.data.userId;
+
+							// 将 userId 保存到全局变量中
+							getApp().globalData.userId = userId;
 							uni.showToast({
 								title: '登录成功',
 								icon: 'success',
@@ -222,7 +232,7 @@
 					confirmPassword,
 					smsCode
 				} = this.registerParams;
-				
+
 				if (username === '' || password === '') {
 					uni.showToast({
 						title: '请输入完整信息',
@@ -230,8 +240,7 @@
 						duration: 2000
 					});
 					return;
-				}
-				else if (password !== confirmPassword) {
+				} else if (password !== confirmPassword) {
 					uni.showToast({
 						title: '两次密码不一致',
 						icon: 'none',
@@ -250,6 +259,11 @@
 					},
 					success: (res) => {
 						if (res.data.code === 200) { // 假设后端返回的状态码是200表示成功
+							// 假设后端返回的用户 id 在 res.data.data.userId 中
+							const userId = res.data.data.userId;
+
+							// 将 userId 保存到全局变量中
+							getApp().globalData.userId = userId;
 							uni.showToast({
 								title: '注册成功',
 								icon: 'success',

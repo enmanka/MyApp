@@ -1,3 +1,4 @@
+
 <template>
 	<div class="footer">
 		<button class="circle-button" @click="selectIcon('life')" :class="{ selected: selectedIcon === 'life' }">
