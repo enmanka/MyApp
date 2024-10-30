@@ -184,7 +184,7 @@
 
 				// 调用后端接口
 				uni.request({
-					url: 'http://localhost:3000/login', // 后端登录接口地址
+					url: 'http://localhost:3000/userLogin/login', // 后端登录接口地址
 					method: 'POST',
 					data: {
 						username: username, // 传递电话号码
@@ -250,7 +250,7 @@
 				}
 				// 调用后端接口
 				uni.request({
-					url: 'http://localhost:3000/register', // 后端注册接口地址
+					url: 'http://localhost:3000/userLogin/register', // 后端注册接口地址
 					method: 'POST',
 					data: {
 						username: username, // 传递电话号码
