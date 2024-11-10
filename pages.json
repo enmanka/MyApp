@@ -20,6 +20,42 @@
         "navigationBarTitleText": "智慧生活"
       }
     },
+	{
+	  "path": "pages/life/accounting",
+	  "style": {
+	    "navigationBarTitleText": "记账"
+	  }
+	},
+	{
+	  "path": "pages/life/eating",
+	  "style": {
+	    "navigationBarTitleText": "饮食"
+	  }
+	},
+	{
+	  "path": "pages/life/eatingin",
+	  "style": {
+	    "navigationBarTitleText": "饮食摄入"
+	  }
+	},
+	{
+	  "path": "pages/life/eatingout",
+	  "style": {
+	    "navigationBarTitleText": "饮食期望"
+	  }
+	},
+	{
+	  "path": "pages/life/income",
+	  "style": {
+	    "navigationBarTitleText": "收入"
+	  }
+	},
+	{
+	  "path": "pages/life/expense",
+	  "style": {
+	    "navigationBarTitleText": "支出"
+	  }
+	},
     {
       "path": "pages/study/index",
       "style": {

@@ -1,0 +1,351 @@
+<template>
+	<view class="container">
+		<!-- 收入/支出按钮 -->
+		<view class="button-group">
+			<button class="income-button" @click="setType('income')">收入</button>
+			<button class="expense-button" @click="setType('expense')">支出</button>
+		</view>
+
+		<!-- 日期与总支出/总收入 -->
+		<view class="header">
+			<view class="date-selector">
+				<picker mode="date" @change="changeDate" :value="selectedDate">
+					<text>{{ selectedDate }}</text>
+				</picker>
+			</view>
+			<view class="totals">
+				<text>收入：{{ totalIncome }}</text>
+				<text>支出：{{ totalExpense }}</text>
+			</view>
+		</view>
+
+		<!-- 记账信息列表 -->
+		<scroll-view class="record-list">
+			<view v-for="(record, index) in records" :key="index" class="record-item"
+				@longpress="startLongPress(index, $event)">
+				<text class="record-description">{{ record.description }}</text>
+				<text class="record-amount">
+					{{ record.type === 'income' ? '+' : '-' }}{{ record.amount }}
+				</text>
+			</view>
+		</scroll-view>
+
+		<!-- 遮罩层，弹窗显示时其他组件变暗 -->
+		<view v-if="showModal" class="overlay show" @click="closeModal"></view>
+
+		<!-- 删除弹窗 -->
+		<view v-if="showModal" :style="{ top: modalPosition }" class="modal show">
+			<view class="modal-item" @click="editRecord">修改</view>
+			<view class="modal-item" @click="deleteRecord(selectedRecordIndex)">删除</view>
+			<view class="modal-item" @click="closeModal">取消</view>
+		</view>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				userId: 0,
+				selectedDate: new Date().toISOString().split("T")[0],
+				totalIncome: 0,
+				totalExpense: 0,
+				records: [],
+				showModal: false,
+				selectedRecordIndex: null,
+				modalPosition: '0px',
+				longPressTimer: null,
+			};
+		},
+		created() {
+			this.userId = getApp().globalData.userId;
+
+			// 页面加载时根据日期和用户ID获取当前账单条目
+			/*
+			uni.request({
+				url: 'http://localhost:3000/getRecords', // 后端接口地址
+				method: 'POST',
+				data: {
+					userId: this.userId,
+					date: this.selectedDate
+				},
+				success: (res) => {
+					if (res.data.code === 200) {
+						this.records = res.data.records;
+						this.updateTotals();
+					} else {
+						console.error('获取账单数据失败:', res.data.message || '未知错误');
+					}
+				},
+				fail: (err) => {
+					console.error('请求失败:', err);
+				}
+			});
+			*/
+		},
+		onBackPress() {
+			// 在这里实现返回按钮点击后的逻辑
+			uni.redirectTo({
+				url: '/pages/life/index' // 替换为你指定的目标页面路径
+			});
+			return true; // 阻止默认的返回操作
+		},
+		methods: {
+			setType(type) {
+				const pageMap = {
+					income: '/pages/life/eatingin',
+					expense: '/pages/life/eatingout',
+				};
+				uni.navigateTo({
+					url: pageMap[type]
+				});
+			},
+			changeDate(event) {
+				this.selectedDate = event.detail.value;
+				this.updateTotals();
+
+				// 切换日期时向后端请求对应日期的数据
+				/*
+				uni.request({
+					url: 'http://localhost:3000/getRecords',
+					method: 'POST',
+					data: {
+						userId: this.userId,
+						date: this.selectedDate
+					},
+					success: (res) => {
+						if (res.data.code === 200) {
+							this.records = res.data.records;
+							this.updateTotals();
+						} else {
+							console.error('获取账单数据失败:', res.data.message || '未知错误');
+						}
+					},
+					fail: (err) => {
+						console.error('请求失败:', err);
+					}
+				});
+				*/
+			},
+			updateTotals() {
+				this.totalIncome = this.records
+					.filter((record) => record.type === "income")
+					.reduce((sum, record) => sum + record.amount, 0);
+				this.totalExpense = this.records
+					.filter((record) => record.type === "expense")
+					.reduce((sum, record) => sum + record.amount, 0);
+			},
+			startLongPress(index, event) {
+				this.selectedRecordIndex = index;
+				this.longPressTimer = setTimeout(() => {
+					this.modalPosition = `${event.touches[0].clientY + 10}px`;
+					this.showModal = true;
+				}, 500);
+			},
+			closeModal() {
+				clearTimeout(this.longPressTimer);
+				this.showModal = false;
+			},
+			deleteRecord(index) {
+				// 删除时根据用户ID、日期和条目ID删除该条目
+				/*
+				uni.request({
+					url: 'http://localhost:3000/deleteRecord',
+					method: 'POST',
+					data: {
+						userId: this.userId,
+						date: this.selectedDate,
+						recordId: this.records[index].id
+					},
+					success: (res) => {
+						if (res.data.code === 200) {
+							this.records.splice(index, 1);
+							this.updateTotals();
+						} else {
+							console.error('删除账单失败:', res.data.message || '未知错误');
+						}
+					},
+					fail: (err) => {
+						console.error('请求失败:', err);
+					}
+				});
+				*/
+				this.records.splice(index, 1);
+				this.updateTotals();
+				this.closeModal();
+			},
+			editRecord() {
+				const record = this.records[this.selectedRecordIndex];
+				const pageUrl = record.type === 'income' ? '/pages/life/income' : '/pages/life/expense';
+
+				uni.navigateTo({
+					url: `${pageUrl}?type=${record.type}&description=${record.description}&amount=${record.amount}&date=${this.selectedDate}&remark=${record.remark}`
+				});
+
+				this.closeModal();
+			},
+		},
+		mounted() {
+			// 初始化数据用于测试
+			this.records = [{
+					id:1,
+					type: "income",
+					remark:"这里是备注",
+					description: "工资",
+					
+					amount: 5000
+				},
+				{
+					id:2,
+					type: "expense",
+					remark:"这里是备注",
+					description: "超市",
+					amount: 200
+				},
+				{
+					id:3,
+					type: "income",
+					remark:"这里是备注",
+					description: "投资",
+					amount: 300
+				},
+				{
+					id:4,
+					type: "income",
+					remark:"这里是备注",
+					description: "投资",
+					amount: 300
+				},
+			];
+
+			this.updateTotals();
+		},
+	};
+</script>
+
+<style scoped>
+	.container {
+		padding: 16px;
+		font-family: Arial, sans-serif;
+	}
+
+	.button-group {
+		display: flex;
+		justify-content: space-around;
+		margin-bottom: 12px;
+	}
+
+	.income-button,
+	.expense-button {
+		width: 48%;
+		padding: 10px;
+		font-size: 16px;
+		color: #fff;
+		border-radius: 8px;
+		text-align: center;
+	}
+
+	.income-button {
+		background-color: #4CAF50;
+	}
+
+	.expense-button {
+		background-color: #F44336;
+	}
+
+	.header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 12px;
+		padding: 8px 0;
+	}
+
+	.date-selector text {
+		color: #333;
+		font-size: 14px;
+		padding: 8px;
+		border: 1px solid #ddd;
+		border-radius: 5px;
+		background-color: #f9f9f9;
+	}
+
+	.totals {
+		text-align: right;
+	}
+
+	.totals text {
+		display: block;
+		font-size: 14px;
+		color: #333;
+		margin-bottom: 4px;
+	}
+
+	.record-list {
+		margin-top: 16px;
+	}
+
+	.record-item {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		background-color: #f5f5f5;
+		padding: 12px;
+		border-radius: 8px;
+		margin-bottom: 8px;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		position: relative;
+	}
+
+	.overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: rgba(0, 0, 0, 0);
+		/* 初始透明 */
+		z-index: 9;
+		transition: background-color 0.3s ease;
+		/* 变暗动画 */
+	}
+
+	.overlay.show {
+		background-color: rgba(0, 0, 0, 0.5);
+		/* 变暗效果 */
+	}
+
+	.modal {
+		position: fixed;
+		left: 0;
+		right: 0;
+		margin: auto;
+		width: 90%;
+		background-color: white;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+		border-radius: 8px;
+		display: flex;
+		flex-direction: column;
+		z-index: 10;
+		opacity: 0;
+		transform: translateY(-20px);
+		transition: opacity 0.3s ease, transform 0.3s ease;
+	}
+
+	.modal.show {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	.modal-item {
+		padding: 10px;
+		font-size: 16px;
+		text-align: center;
+		color: #333;
+		border-bottom: 1px solid #ddd;
+	}
+
+	.modal-item:last-child {
+		border-bottom: none;
+	}
+</style>
