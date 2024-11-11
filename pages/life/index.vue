@@ -64,7 +64,7 @@
 			navigateTo(page) {
 				const pageMap = {
 					weather: '/pages/life/weather',
-					contacts: '/pages/life/contacts',
+					contacts: '/pages/life/contacts/contacts',
 					accounting: '/pages/life/accounting',
 					eating: '/pages/life/eating'
 				};
