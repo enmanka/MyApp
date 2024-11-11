@@ -4,10 +4,12 @@
 		<div class="circle-container">
 			<div v-for="(circle, index) in circles" :key="index" class="circle" :class="{'selected': circle.selected}"
 				@click="selectCategory(index)">
-				<img :src="circle.imgSrc" alt="默认图片" class="circle-img" />
+				<!-- <img :src="circle.imgSrc" alt="默认图片" class="circle-img" /> -->
+				<uni-icons :type="circle.selected ? 'star-filled' : 'star'" size=40 class="circle-icon" />
 				<p class="category-name">{{ circle.category }}</p>
 			</div>
-		</div>
+		</div> 
+		
 
 		<!-- 下半部分：计算器 -->
 		<div class="calculator">
@@ -22,7 +24,7 @@
 				<input v-model="remark" id="remark" placeholder="输入备注..." />
 			</div>
 
-			<!-- 日期选择部分 -->
+			<!-- 日期选择部分-->
 			<div class="date-selector">
 				<label for="date-picker">日期：</label>
 				<input type="date" id="date-picker" v-model="currentDate" />
@@ -79,67 +81,24 @@
 		data() {
 			return {
 				showSuccessPopup: false, // 控制弹窗显示
-				circles: [{
-						imgSrc: "https://via.placeholder.com/100",
-						category: "工资",
-						selected: false
-					},
-					{
-						imgSrc: "https://via.placeholder.com/100",
-						category: "类别2",
-						selected: false
-					},
-					{
-						imgSrc: "https://via.placeholder.com/100",
-						category: "类别3",
-						selected: false
-					},
-					{
-						imgSrc: "https://via.placeholder.com/100",
-						category: "类别4",
-						selected: false
-					},
-					{
-						imgSrc: "https://via.placeholder.com/100",
-						category: "类别5",
-						selected: false
-					},
-					{
-						imgSrc: "https://via.placeholder.com/100",
-						category: "类别6",
-						selected: false
-					},
-					{
-						imgSrc: "https://via.placeholder.com/100",
-						category: "类别7",
-						selected: false
-					},
-					{
-						imgSrc: "https://via.placeholder.com/100",
-						category: "类别8",
-						selected: false
-					},
-					{
-						imgSrc: "https://via.placeholder.com/100",
-						category: "类别9",
-						selected: false
-					},
-					{
-						imgSrc: "https://via.placeholder.com/100",
-						category: "类别10",
-						selected: false
-					},
-					{
-						imgSrc: "https://via.placeholder.com/100",
-						category: "类别11",
-						selected: false
-					},
-					{
-						imgSrc: "https://via.placeholder.com/100",
-						category: "类别12",
-						selected: false
-					}
-				],
+				
+				circles: [
+				            {category: "饮品", selected: false },
+				            {category: "早餐", selected: false },
+				            {category: "午餐", selected: false },
+				            {category: "晚餐", selected: false },
+				            {category: "零食", selected: false },
+				            {category: "外卖", selected: false },
+				            {category: "食堂", selected: false },
+				            {category: "水果", selected: false },
+				            {category: "甜品", selected: false },
+				            {category: "烧烤", selected: false },
+				            {category: "快餐", selected: false },
+				            {category: "其它", selected: false }
+				            ],
+				
+				
+				
 				userId: getApp().globalData.userId,
 				remark: "",
 				myData: "",
@@ -221,6 +180,7 @@
 				});
 				this.selectedCategory = this.circles[index].category;
 			},
+			
 
 			openDatePicker() {
 				this.showDatePicker = true;
@@ -237,12 +197,12 @@
 			confirmEntry() {
 				// 检查条件
 				if (this.selectedCategory === null || parseFloat(this.display) === 0 || !this.display) {
-					this.showAlertMessage("请选择类别并输入有效的金额！");
+					this.showAlertMessage("请选择类别并输入有效的数目！");
 					return;
 				}
 				// 检查金额是否为负数
 				if (parseFloat(this.display) < 0) {
-					this.showAlertMessage("金额不能为负数！");
+					this.showAlertMessage("数目不能为负数！");
 					return;
 				}
 
@@ -269,7 +229,7 @@
 						date: this.currentDate,
 						remark：this.remark,
 						amount:this.amount,
-						type:'income',
+						type:'expense',
 						category: this.selectedCategory,
 					},
 					success: (res) => {
@@ -283,7 +243,7 @@
 							          	});
 							          }, 1000);
 						} else {
-							console.error('删除账单失败:', res.data.message || '未知错误');
+							console.error('删除失败:', res.data.message || '未知错误');
 						}
 					},
 					fail: (err) => {
@@ -318,6 +278,7 @@
 </script>
 
 <style scoped>
+	
 	.container {
 		padding: 16px;
 		font-family: Arial, sans-serif;
@@ -326,35 +287,55 @@
 	.circle-container {
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);
-		gap: 16px;
-		margin-bottom: 32px;
+		gap: 8px;
+		margin-bottom: 16px;
+		text-align: center;
 	}
 
 	.circle {
-		width: 80px;
-		height: 80px;
+		width: 50px;
+		height: 50px;
 		border-radius: 50%;
-		background-color: #f0f0f0;
+		/* background-color: #f0f0f0; */
 		overflow: hidden;
 		display: flex;
 		justify-content: center;
 		align-items: center;
 		flex-direction: column;
 		text-align: center;
+		padding: 16px;
+		/* border: 1px solid #ccc; *//* 方形框的边框 */
+		/* border-radius: 8px; */ /* 方框的圆角 */
+		/* transition: background-color 0.3s ease; */ /* 添加过渡效果 */
 	}
 
 	.circle.selected {
-		background-color: yellow;
+		background-color: #ffe3a1;
 	}
 
-	.circle-img {
-		width: 60px;
-		height: 60px;
-		object-fit: cover;
+	/* .circle-img {
+		width: 50px;
+		height: 50px;
+		
+		border-radius: 50%;
+		background-color: #f0f0f0;
+		margin-bottom: 8px;
+	} */
+	.circle-icon {
+			font-size: 30px;
+			color: #999;
 	}
+	
+	.circle.selected .circle-icon {
+			color: #ff9900; /* 选中后的图标颜色 */
+	}
+	
 
 	.category-name {
 		font-size: 14px;
+		color:#333;
+		white-space: nowrap; /* 确保文本不换行 */
+		margin-top: 8px;
 	}
 
 	.calculator {
@@ -415,18 +396,20 @@
 	.calculator-buttons {
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);
-		gap: 10px;
+		gap: 4px;
 		width: 100%;
+		justify-items: stretch; /* 拉伸按钮使其填满每列 */
 	}
 
 	.calculator-buttons button {
-		padding: 16px;
-		font-size: 18px;
+		padding: 10px;
+		font-size: 16px;
 		border: 1px solid #ccc;
 		border-radius: 8px;
 		background-color: #fff;
 		cursor: pointer;
-		height: 60px;
+		height: 50px;
+		width:100%
 	}
 
 	.calculator-buttons button:disabled {
