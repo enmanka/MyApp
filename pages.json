@@ -21,6 +21,35 @@
       }
     },
 	{
+		"path" : "pages/life/contacts/contacts",
+		"style" : 
+		{
+			"navigationBarTitleText" : "通讯录"
+		}
+	},
+	{
+		"path" : "pages/life/contacts/addContact",
+		"style" : 
+		{
+			"navigationBarTitleText" : "添加联系人"
+		}
+	},
+	{
+		"path" : "pages/life/contacts/showContact",
+		"style" : 
+		{
+			"navigationBarTitleText" : "详情页"
+		}
+	},
+	{
+		"path" : "pages/life/contacts/editContact",
+		"style" : 
+		{
+			"navigationBarTitleText" : "编辑联系人"
+		}
+	},
+	
+	{
 	  "path": "pages/life/accounting",
 	  "style": {
 	    "navigationBarTitleText": "记账"
@@ -35,13 +64,13 @@
 	{
 	  "path": "pages/life/eatingin",
 	  "style": {
-	    "navigationBarTitleText": "饮食摄入"
+	    "navigationBarTitleText": "饮食记录"
 	  }
 	},
 	{
 	  "path": "pages/life/eatingout",
 	  "style": {
-	    "navigationBarTitleText": "饮食期望"
+	    "navigationBarTitleText": "饮食计划"
 	  }
 	},
 	{
