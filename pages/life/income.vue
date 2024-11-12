@@ -213,12 +213,13 @@
 					remark: this.remark,
 					date: this.currentDate,
 				};
+				
+				this.amount = this.display;
 
 				// 与后端通信的代码，传入id(若id!=-1则需要删除对应日期的对应记录)、userId、日期等数据
-				// 注意：如果需要替换URL和字段名称，请根据后端接口文档进行修改
-				/*
+				
 				uni.request({
-					url: 'http://localhost:3000/deleteRecord',
+					url: 'http://localhost:3000/account/addRecord',
 					method: 'POST',
 					data: {
 						userId: this.userId,
@@ -227,9 +228,9 @@
 						//若为修改逻辑，则此处传递需要删除的原来的那条记录的日期
 						mydate:this.myDate,
 						date: this.currentDate,
-						remark：this.remark,
-						amount:this.amount,
-						type:'expense',
+						remark: this.remark,
+						amount: this.amount,
+						type: 'income',
 						category: this.selectedCategory,
 					},
 					success: (res) => {
@@ -243,14 +244,14 @@
 							          	});
 							          }, 1000);
 						} else {
-							console.error('删除账单失败:', res.data.message || '未知错误');
+							console.error('添加账单失败:', res.data.message || '未知错误');
 						}
 					},
 					fail: (err) => {
 						console.error('请求失败:', err);
 					}
 				});
-				*/
+				
 
 				console.log("提交的数据：", entryData);
 				this.showSuccessPopup = true; // 显示“添加成功”弹窗
