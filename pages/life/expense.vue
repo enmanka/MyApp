@@ -215,16 +215,14 @@
 				};
 
 				this.amount = this.display;
-				// 与后端通信的代码，传入id(若id!=-1则需要删除对应日期的对应记录)、userId、日期等数据
+				// 与后端通信的代码，传入id、userId、日期等数据
 				
 				uni.request({
 					url: 'http://localhost:3000/account/addRecord',
 					method: 'POST',
 					data: {
 						userId: this.userId,
-						//若为修改逻辑，则此处的id不为-1，为相应记录的id
 						id:this.id,
-						//若为修改逻辑，则此处传递需要删除的原来的那条记录的日期
 						mydate:this.myDate,
 						date: this.currentDate,
 						remark: this.remark,
