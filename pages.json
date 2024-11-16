@@ -91,6 +91,30 @@
         "navigationBarTitleText": "智慧助学"
       }
     },
+	{
+	  "path": "pages/study/timetable",
+	  "style": {
+	    "navigationBarTitleText": "课表"
+	  }
+	},
+	{
+	  "path": "pages/study/addClass",
+	  "style": {
+	    "navigationBarTitleText": "课程详情"
+	  }
+	},
+	{
+	  "path": "pages/study/remember",
+	  "style": {
+	    "navigationBarTitleText": "备忘录"
+	  }
+	},
+	{
+	  "path": "pages/study/notes",
+	  "style": {
+	    "navigationBarTitleText": "课堂笔记"
+	  }
+	},
     {
       "path": "pages/person/index",
       "style": {

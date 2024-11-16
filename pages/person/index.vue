@@ -73,9 +73,13 @@
 				uni.setStorageSync('selectedIcon', icon);
 			}
 		},
-		mounted() {
-			this.selectedIcon = uni.getStorageSync('selectedIcon') || 'person';
-		}
+		// mounted() {
+		// 	this.selectedIcon = 'person';
+		// }
+		onShow() {
+			this.selectedIcon = 'person';
+			uni.setStorageSync('selectedIcon', 'person');
+		},
 	}
 </script>
 
