@@ -81,7 +81,7 @@ export default {
     };
   },
   created() {
-    this.fetchContactDetails();
+    //this.fetchContactDetails();
   },
   methods: {
     // 从后端获取联系人详细信息

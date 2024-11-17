@@ -116,7 +116,7 @@
 		},
 		mounted() {
 			// 调用 fetchContacts 从后端获取联系人数据
-			this.fetchContacts();
+			//this.fetchContacts();
 		},
 	};
 </script>
