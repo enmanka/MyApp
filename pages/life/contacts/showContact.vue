@@ -52,31 +52,32 @@
 export default {
   data() {
     return {
-	  //用于查看样式的代码
-	  // contact: {
-	  //         id: this.$route.query.id,
-	  //         name: "Alice",
-	  //         gender: "女",
-	  //         job: "软件工程师",
-	  //         age: 28,
-	  //         phone: "123-456-7890",
-	  //         qq: "12345678",
-	  //         email: "alice@example.com",
-	  //         address: "北京市朝阳区",
-	  //         notes: "这是备注信息",
-	  //       },
-      contact: {
-        id: this.$route.query.id,
-        name: "",
-        gender: "",
-        job: "",
-        age: null,
-        phone: "",
-        qq: "",
-        email: "",
-        address: "",
-        notes: "",
-      },
+	  //用于查看样式的代码，，链接后端接口后需注释掉
+	  contact: {
+	          id: this.$route.query.id,
+	          name: "Alice",
+	          gender: "女",
+	          job: "软件工程师",
+	          age: 28,
+	          phone: "123-456-7890",
+	          qq: "12345678",
+	          email: "alice@example.com",
+	          address: "北京市朝阳区",
+	          notes: "这是备注信息",
+	        },
+	  //之后从后端获取数据
+      // contact: {
+      //   id: this.$route.query.id,
+      //   name: "",
+      //   gender: "",
+      //   job: "",
+      //   age: null,
+      //   phone: "",
+      //   qq: "",
+      //   email: "",
+      //   address: "",
+      //   notes: "",
+      // },
     };
   },
   created() {
@@ -84,25 +85,25 @@ export default {
   },
   methods: {
     // 从后端获取联系人详细信息
-    async fetchContactDetails() {
-      try {
-        const response = await uni.request({
-          url: `https://your-api.com/api/contacts/${this.contact.id}`, // 替换为实际API地址
-          method: 'GET',
-        });
+    // async fetchContactDetails() {
+    //   try {
+    //     const response = await uni.request({
+    //       url: `https://your-api.com/api/contacts/${this.contact.id}`, // 替换为实际API地址
+    //       method: 'GET',
+    //     });
 
-        // 检查响应状态
-        if (response.statusCode === 200) {
-          this.contact = response.data; // 设置contact数据
-        } else {
-          console.error("获取联系人信息失败:", response);
-          uni.showToast({ title: "获取联系人失败", icon: "none" });
-        }
-      } catch (error) {
-        console.error("请求失败:", error);
-        uni.showToast({ title: "请求失败，请稍后重试", icon: "none" });
-      }
-    },
+    //     // 检查响应状态
+    //     if (response.statusCode === 200) {
+    //       this.contact = response.data; // 设置contact数据
+    //     } else {
+    //       console.error("获取联系人信息失败:", response);
+    //       uni.showToast({ title: "获取联系人失败", icon: "none" });
+    //     }
+    //   } catch (error) {
+    //     console.error("请求失败:", error);
+    //     uni.showToast({ title: "请求失败，请稍后重试", icon: "none" });
+    //   }
+    // },
     // 跳转到编辑联系人页面
     editContact() {
       uni.navigateTo({
