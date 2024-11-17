@@ -62,6 +62,8 @@
 export default {
   data() {
     return {
+		
+		//连接后端后使用
       contact: {
         id: null,
         name: '',
@@ -76,20 +78,26 @@ export default {
       },
     };
   },
-  created() {
-    const contactId = this.$route.query.id;
-	//初始化为当前联系人
-    if (contactId) {
-      this.fetchContact(contactId);
-    }
-  },
+
+ //初始化
+ onLoad(options) {
+   this.contact.id = options.id || null;
+   this.contact.name = options.name || '';
+   this.contact.gender = options.gender || '';
+   this.contact.job = options.job || '';
+   this.contact.age = options.age || null;
+   this.contact.phone = options.phone || '';
+   this.contact.qq = options.qq || '';
+   this.contact.email = options.email || '';
+   this.contact.address = options.address || '';
+   this.contact.notes = options.notes || '';
+ },
   methods: {
 	 // 与后端链接的部分
     // 获取联系人信息
     async fetchContact(id) {
       try {
-		
-		  
+				  
         const response = await uni.request({
           url: `https://your-api.com/api/contacts/${id}`, // 替换为实际API接口
           method: 'GET',
@@ -142,6 +150,10 @@ export default {
         }
       }
     },
+	
+	
+
+
   },
 };
 </script>

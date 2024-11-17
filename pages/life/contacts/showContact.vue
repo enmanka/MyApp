@@ -3,7 +3,7 @@
     <!-- 顶部的图标和编辑按钮 -->
     <div class="header">
       <uni-icons type="person" size="100" class="person-icon"></uni-icons>
-      <uni-icons type="compose" size="30" class="edit-icon" @click="editContact"></uni-icons>
+      <uni-icons type="compose" size="30" class="edit-icon" @click="editContact(contact)"></uni-icons>
     </div>
 
     <!-- 联系人详细信息展示 -->
@@ -54,7 +54,7 @@ export default {
     return {
 	  //用于查看样式的代码，，链接后端接口后需注释掉
 	  contact: {
-	          id: this.$route.query.id,
+	          id: 1,//this.$route.query.id,
 	          name: "Alice",
 	          gender: "女",
 	          job: "软件工程师",
@@ -105,11 +105,12 @@ export default {
     //   }
     // },
     // 跳转到编辑联系人页面
-    editContact() {
+    editContact(contact) {
       uni.navigateTo({
-        url: `/pages/life/contacts/editContact?id=${this.contact.id}`,
+        url: `/pages/life/contacts/editContact?id=${contact.id}&name=${contact.name}&gender=${contact.gender}&job=${contact.job}&age=${contact.age}&phone=${contact.phone}&qq=${contact.qq}&email=${contact.email}&address=${contact.address}&notes=${contact.notes}`,
       });
-    },
+    }
+
   },
 };
 </script>
