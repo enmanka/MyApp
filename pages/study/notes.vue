@@ -94,13 +94,13 @@ export default {
       });
     },
     // 显示删除确认弹框
-    methods: {
-      confirmDelete(note, index) {
+   
+    confirmDelete(note, index) {
        
         this.noteToDelete = note;
         this.deleteIndex = index;
         this.$refs.deletePopup.open(); // 手动调用打开弹框
-      },
+      
     },
 
     // 删除笔记
