@@ -80,16 +80,13 @@ export default {
   mounted() {
     // 初始化数据，模拟从路由参数中获取笔记详情
     const params = this.$route.query;
-    this.originalNoteTitle = params.title || '数学笔记';
+    this.originalNoteTitle = params.title || '默认标题';
     this.originalNoteContent = params.content || '笔记内容';
-    this.noteTitle = this.originalNoteTitle;
+    //this.noteTitle = this.originalNoteTitle;
     this.noteContent = this.originalNoteContent;
   },
   onLoad(options) {
-      // 从 options 获取传递过来的参数
-      if (options && options.name) {
-        this.noteName = options.name;
-      }
+      this.noteTitle = options.name; // 使用传递的参数
     },
 };
 </script>
