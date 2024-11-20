@@ -24,7 +24,19 @@
 
 			<div class="form-group">
 				<label>行课周数</label>
-				<input type="text" v-model="classes.week" placeholder="请输入行课周数" />
+				<div class="week-range">
+					<div class="week-input">
+						<label>(起始)</label>
+						<input type="number" v-model.number="classes.startWeek" @blur="validateWeek" placeholder="起始周数"
+							min="1" />
+					</div>
+					<div class="week-input">
+						<label>(结束)</label>
+						<input type="number" v-model.number="classes.endWeek" @blur="validateWeek" placeholder="结束周数"
+							min="1" />
+					</div>
+				</div>
+				<div v-if="weekError" class="error-message">{{ weekError }}</div>
 			</div>
 
 			<div class="form-group">
@@ -63,16 +75,18 @@
 					address: '',
 					teacher: '',
 					contact: '',
-					week: '',
+					startWeek: null, // 起始周数
+					endWeek: null, // 结束周数
 					notes: '',
 					id: -1,
 					weekDay: -1,
-					period: -1
+					period: -1,
 				},
 				userID: '', // 假设从本地存储或其他方式获取当前用户的ID
 				showSuccessPopup: false, // 控制弹窗显示
 				showErrorPopup: false, // 控制错误弹窗显示
 				errorMessage: '', // 错误信息
+				weekError: '', // 行课周数错误提示
 			};
 		},
 		onLoad(query) {
@@ -81,7 +95,8 @@
 			this.classes.address = query.address || "";
 			this.classes.teacher = query.teacher || "";
 			this.classes.contact = query.contact || "";
-			this.classes.week = query.week || "";
+			this.classes.startWeek = query.startWeek || "";
+			this.classes.endWeek = query.endWeek || "";
 			this.classes.id = query.id || ""; // 获取 id
 			this.classes.notes = query.notes || "";
 			//从0开始，记录课程所处的日期
@@ -98,80 +113,84 @@
 			});
 			return true; // 阻止默认的返回操作
 		},
-
 		methods: {
-			// 提交表单并通过API将数据发送到后端
-			submitForm() {
-				// 此处填写添加课程逻辑
-				// 判断课程名是否为空
-				if (!this.classes.name.trim()) {
-					// 如果课程名为空，显示错误弹窗
-					this.errorMessage = '课程名不能为空！';
-					this.showErrorPopup = true;
-					return; // 阻止提交
+			// 验证行课周数
+			validateWeek() {
+				this.weekError = '';
+				if (this.classes.startWeek && this.classes.startWeek < 1) {
+					this.weekError = '起始周数必须是大于等于1的整数！';
 				}
+				if (this.classes.endWeek && this.classes.endWeek < 1) {
+					this.weekError = '结束周数必须是大于等于1的整数！';
+				}
+				if (
+					this.classes.startWeek &&
+					this.classes.endWeek &&
+					this.classes.endWeek < this.classes.startWeek
+				) {
+					this.weekError = '结束周数不能小于起始周数！';
+				}
+			},
+			// 提交表单
+			submitForm() {
+				this.validateWeek();
+				if (this.weekError) {
+					return; // 若有错误，则阻止提交
+				}
+
+				// 提交数据逻辑
 				const entryData = {
 					name: this.classes.name,
 					address: this.classes.address,
 					teacher: this.classes.teacher,
 					contact: this.classes.contact,
-					week: this.classes.week,
-					id: this.classes.id, // 获取 id
+					startWeek: this.classes.startWeek,
+					endWeek: this.classes.endWeek,
 					notes: this.classes.notes,
-					//从0开始，记录课程所处的日期
+					id: this.classes.id,
 					weekDay: this.classes.weekDay,
-					//记录课程的节数
 					period: this.classes.period,
 				};
 
-				// 与后端通信的代码，传入id(若id!=-1则需要删除对应日期的对应记录)、userId、日期等数据
-				// 注意：如果需要替换URL和字段名称，请根据后端接口文档进行修改
+				// 与后端通信的代码（注释掉的部分）
 				/*
 				uni.request({
-					url: 'http://localhost:3000/deleteRecord',
+					url: 'http://localhost:3000/addCourse',
 					method: 'POST',
-					data: {
-						userId: this.userId,
-						//若为修改逻辑，则此处的id不为-1，为相应记录的id
-						//若为修改逻辑，则此处传递需要删除的原来的那条记录的id
-						id:this.id,
-						...
-					},
+					data: entryData,
 					success: (res) => {
 						if (res.data.code === 200) {
-							this.showSuccessPopup = true; // 显示“添加成功”弹窗							          
-							          setTimeout(() => {
-							          	this.showSuccessPopup = false;
-							          	uni.navigateTo({
-							          		url: '/pages/study/timetable'
-							          	});
-							          }, 1000);
+							this.showSuccessPopup = true; // 显示“添加成功”弹窗
+							setTimeout(() => {
+								this.showSuccessPopup = false;
+								uni.navigateTo({
+									url: '/pages/study/timetable',
+								});
+							}, 1000);
 						} else {
 							console.error('失败:', res.data.message || '未知错误');
 						}
 					},
 					fail: (err) => {
 						console.error('请求失败:', err);
-					}
+					},
 				});
 				*/
 
-				console.log("提交的数据：", entryData);
+				console.log('提交的数据：', entryData);
 				this.showSuccessPopup = true; // 显示“添加成功”弹窗
 
-				// 1秒后自动隐藏弹窗
 				setTimeout(() => {
 					this.showSuccessPopup = false;
 					uni.navigateTo({
-						url: '/pages/study/timetable'
+						url: '/pages/study/timetable',
 					});
 				}, 1000);
 			},
-			// 关闭错误弹窗
 			closeErrorPopup() {
 				this.showErrorPopup = false;
-			}
-		}
+			},
+		},
 	};
 </script>
 
@@ -300,5 +319,36 @@
 
 	.close-button:hover {
 		background-color: #357abd;
+	}
+
+	.week-range {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.week-input {
+		flex: 1;
+	}
+
+	.week-input label {
+		display: block;
+		margin-bottom: 5px;
+		color: #666;
+	}
+
+	.week-input input {
+		width: 90%;
+		padding: 8px;
+		border: 1px solid #ddd;
+		border-radius: 8px;
+		font-size: 14px;
+	}
+
+	.error-message {
+		color: #d9363e;
+		margin-top: 5px;
+		font-size: 14px;
 	}
 </style>

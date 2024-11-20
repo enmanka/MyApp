@@ -27,7 +27,7 @@
 			</div>
 		</div>
 
-		<!-- 课程详情弹窗 -->
+		<!-- 弹窗部分 -->
 		<div v-if="showPopup" class="popup">
 			<div class="popup-content">
 				<!-- 右上角关闭按钮 -->
@@ -36,9 +36,10 @@
 				<p>上课地点：{{ popupData.address }}</p>
 				<p>教师：{{ popupData.teacher }}</p>
 				<p>教师联系方式：{{ popupData.contact }}</p>
-				<p>行课周数：{{ popupData.week }}</p>
+				<p>起始周数：{{ popupData.startWeek || "未填写" }}</p>
+				<p>结束周数：{{ popupData.endWeek || "未填写" }}</p>
 				<p>备注：{{ popupData.notes }}</p>
-				<!-- 修改与删除按钮放在同一行并带有按动动画 -->
+				<!-- 修改与删除按钮 -->
 				<div class="buttons">
 					<button @click="modify" class="modify-btn">修改</button>
 					<button @click="deleteClass" class="delete-btn">删除</button>
@@ -77,7 +78,8 @@
 					period: 1,
 					address: "教室1",
 					contact: "123456789",
-					week: "第1、2、3周",
+					startWeek: "",
+					endWeek:9,
 					notes: "无"
 				},
 				{
@@ -85,21 +87,36 @@
 					name: "线性代数",
 					teacher: "李老师",
 					weekDay: 2,
-					period: 2
+					period: 2,
+					address: "教室1",
+					contact: "123456789",
+					startWeek: 1,
+					endWeek:9,
+					notes: "无"
 				},
 				{
 					id: 3,
 					name: "大学物理",
 					teacher: "王老师",
 					weekDay: 4,
-					period: 4
+					period: 4,
+					address: "教室1",
+					contact: "123456789",
+					startWeek: 1,
+					endWeek:9,
+					notes: "无"
 				},
 				{
 					id: 4,
 					name: "英语口语",
 					teacher: "赵老师",
 					weekDay: 1,
-					period: 3
+					period: 3,
+					address: "教室1",
+					contact: "123456789",
+					startWeek: 1,
+					endWeek:9,
+					notes: "无"
 				},
 			];
 			// 页面展示时获取课程数据
@@ -156,10 +173,10 @@
 
 				// 如果没有课程，执行添加课程的逻辑
 				this.activeCell = `${rowIndex}-${day}`; // 设置点击状态
-				console.log(rowIndex+1);
+				console.log(rowIndex + 1);
 				console.log(this.days.indexOf(day));
-				const ret=this.days.indexOf(day);
-				const ret1=rowIndex+1;
+				const ret = this.days.indexOf(day);
+				const ret1 = rowIndex + 1;
 				setTimeout(() => {
 					this.activeCell = null;
 					uni.navigateTo({
@@ -200,7 +217,7 @@
 				// 页面跳转，并将数据作为查询参数传递
 				// 手动拼接查询参数
 				const pageUrl =
-					`/pages/study/addClass?name=${classData.name}&address=${classData.address}&teacher=${classData.teacher}&contact=${classData.contact}&week=${classData.week}&id=${classData.id}&notes=${classData.notes}&weekDay=${classData.weekDay}&period=${classData.period}`;
+					`/pages/study/addClass?name=${classData.name}&address=${classData.address}&teacher=${classData.teacher}&contact=${classData.contact}&startWeek=${classData.startWeek}&endWeek=${classData.endWeek}&id=${classData.id}&notes=${classData.notes}&weekDay=${classData.weekDay}&period=${classData.period}`;
 				uni.navigateTo({
 					url: pageUrl
 				});
