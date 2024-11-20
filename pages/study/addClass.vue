@@ -24,9 +24,14 @@
 
 			<div class="form-group">
 				<label>行课周数</label>
-				<input type="text" v-model="classes.week" placeholder="请输入行课周数" />
+				<div class="week-inputs">
+				  <input
+					type="number" v-model="classes.weekStart" placeholder="开始周" />
+				  <input
+					type="number" v-model="classes.weekEnd" placeholder="结束周" />
+				</div>
 			</div>
-
+	
 			<div class="form-group">
 				<label>备注</label>
 				<textarea v-model="classes.notes" placeholder="请输入备注"></textarea>
@@ -56,122 +61,114 @@
 
 <script>
 	export default {
-		data() {
-			return {
-				classes: {
-					name: '',
-					address: '',
-					teacher: '',
-					contact: '',
-					week: '',
-					notes: '',
-					id: -1,
-					weekDay: -1,
-					period: -1
-				},
-				userID: '', // 假设从本地存储或其他方式获取当前用户的ID
-				showSuccessPopup: false, // 控制弹窗显示
-				showErrorPopup: false, // 控制错误弹窗显示
-				errorMessage: '', // 错误信息
-			};
-		},
-		onLoad(query) {
-			// 获取 URL 中的参数
-			this.classes.name = query.name || "";
-			this.classes.address = query.address || "";
-			this.classes.teacher = query.teacher || "";
-			this.classes.contact = query.contact || "";
-			this.classes.week = query.week || "";
-			this.classes.id = query.id || ""; // 获取 id
-			this.classes.notes = query.notes || "";
-			//从0开始，记录课程所处的日期
-			this.classes.weekDay = query.weekDay || "";
-			//记录课程的节数
-			this.classes.period = query.period || "";
-			// 使用 id 做其他操作，例如查询该课程的详细信息
-			console.log(this.classes.weekDay);
-		},
-		onBackPress() {
-			// 在这里实现返回按钮点击后的逻辑
-			uni.redirectTo({
-				url: '/pages/study/timetable' // 替换为你指定的目标页面路径
-			});
-			return true; // 阻止默认的返回操作
-		},
-
-		methods: {
-			// 提交表单并通过API将数据发送到后端
-			submitForm() {
-				// 此处填写添加课程逻辑
-				// 判断课程名是否为空
-				if (!this.classes.name.trim()) {
-					// 如果课程名为空，显示错误弹窗
-					this.errorMessage = '课程名不能为空！';
-					this.showErrorPopup = true;
-					return; // 阻止提交
-				}
-				const entryData = {
-					name: this.classes.name,
-					address: this.classes.address,
-					teacher: this.classes.teacher,
-					contact: this.classes.contact,
-					week: this.classes.week,
-					id: this.classes.id, // 获取 id
-					notes: this.classes.notes,
-					//从0开始，记录课程所处的日期
-					weekDay: this.classes.weekDay,
-					//记录课程的节数
-					period: this.classes.period,
-				};
-
-				// 与后端通信的代码，传入id(若id!=-1则需要删除对应日期的对应记录)、userId、日期等数据
-				// 注意：如果需要替换URL和字段名称，请根据后端接口文档进行修改
-				/*
-				uni.request({
-					url: 'http://localhost:3000/deleteRecord',
-					method: 'POST',
-					data: {
-						userId: this.userId,
-						//若为修改逻辑，则此处的id不为-1，为相应记录的id
-						//若为修改逻辑，则此处传递需要删除的原来的那条记录的id
-						id:this.id,
-						...
-					},
-					success: (res) => {
-						if (res.data.code === 200) {
-							this.showSuccessPopup = true; // 显示“添加成功”弹窗							          
-							          setTimeout(() => {
-							          	this.showSuccessPopup = false;
-							          	uni.navigateTo({
-							          		url: '/pages/study/timetable'
-							          	});
-							          }, 1000);
-						} else {
-							console.error('失败:', res.data.message || '未知错误');
-						}
-					},
-					fail: (err) => {
-						console.error('请求失败:', err);
-					}
-				});
-				*/
-
-				console.log("提交的数据：", entryData);
-				this.showSuccessPopup = true; // 显示“添加成功”弹窗
-
-				// 1秒后自动隐藏弹窗
-				setTimeout(() => {
-					this.showSuccessPopup = false;
-					uni.navigateTo({
-						url: '/pages/study/timetable'
-					});
-				}, 1000);
-			},
-			// 关闭错误弹窗
-			closeErrorPopup() {
-				this.showErrorPopup = false;
-			}
-		}
+	  data() {
+	    return {
+	      classes: {
+	        name: '',
+	        address: '',
+	        teacher: '',
+	        contact: '',
+	        weekStart: 1, // 起始周
+	        weekEnd: 16,  // 结束周
+	        notes: '',
+	        id: -1, // 默认值为 -1，表示新记录
+	        weekDay: -1, // 传入判断
+	        period: -1, // 传入判断
+	      },
+	      userId: '', // 当前用户 ID
+	      originalId: null, // 原记录 ID（用于修改时）
+	      showSuccessPopup: false,
+	      showErrorPopup: false,
+	      errorMessage: '', // 错误信息
+	    };
+	  },
+	  onLoad(query) {
+	    // 从 URL 参数获取数据，用于回显和判断是否是修改
+		this.classes.name = query.name || "";
+		this.classes.address = query.address || "";
+		this.classes.teacher = query.teacher || "";
+		this.classes.contact = query.contact || "";
+		this.classes.week = query.week || "";
+		this.classes.id = query.id || ""; // 获取 id
+		this.classes.notes = query.notes || "";
+		//从0开始，记录课程所处的日期
+		// this.classes.weekDay = query.weekDay || "";
+		//记录课程的节数
+		// this.classes.period = query.period || "";
+		
+		this.classes.weekDay = query.dayIndex || -1;
+		this.classes.period = query.periodIndex || -1;
+		// 使用 id 做其他操作，例如查询该课程的详细信息
+		console.log(this.classes.weekDay);
+		if (query.userId) {
+	      this.userId = query.userId;
+		  Object.assign(this.classes, query);
+	    } 
+		else {
+	      // 或从全局变量获取 userId
+	      this.userId = getApp().globalData.userId || '';
+		  }
+		  if (query.id) {
+		    this.originalId = query.id; // 如果存在原 ID，则设置为修改逻辑
+		  }
+	    },
+	  
+	  methods: {
+	   // 提交表单到后端
+	    submitForm() {
+	      if (!this.classes.name.trim()) {
+	        this.errorMessage = '课程名不能为空！';
+	        this.showErrorPopup = true;
+	        return;
+	      }
+	
+	      // 准备请求数据
+	      const requestData = {
+	        userId: this.userId, // 当前用户 ID
+	        originalId: this.originalId, // 修改时传递原记录 ID
+	        newRecord: {
+	          classname: this.classes.name,
+	          teacher_name: this.classes.teacher,
+	          classtime: this.classes.period,
+	          start_week: this.classes.weekStart,
+	          end_week: this.classes.weekEnd,
+	          weekday: this.classes.weekDay,
+	          timetable_note: this.classes.notes,
+	          timetable_contact: this.classes.contact,
+	          location: this.classes.address,
+	        },
+	      };
+	
+	      // 发起请求
+	      uni.request({
+	        url: 'http://localhost:3000/timetable/modifyClass',
+	        method: 'POST',
+	        data: requestData,
+	        success: (res) => {
+	          if (res.data.code === 200) {
+	            this.showSuccessPopup = true;
+	            setTimeout(() => {
+	              this.showSuccessPopup = false;
+	              uni.navigateTo({
+	                url: '/pages/study/timetable',
+	              });
+	            }, 1000);
+	          } else {
+	            this.errorMessage = res.data.message || '操作失败！';
+	            this.showErrorPopup = true;
+	          }
+	        },
+	        fail: (err) => {
+	          console.error('请求失败:', err);
+	          this.errorMessage = '网络错误，请稍后再试！';
+	          this.showErrorPopup = true;
+	        },
+	      });
+	    },
+	    closeErrorPopup() {
+	      this.showErrorPopup = false;
+	    },
+	  },
 	};
 </script>
 

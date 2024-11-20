@@ -1,87 +1,97 @@
 <template>
 	<div class="lifeHomepage">
-		<div class="lifeContent">
-			<div class="modules">
-				<div class="module weather" v-if="weather" @click="navigateTo('weather')">
-					<div class="weather-content">
-						<img :src="weather.icon" alt="天气图标" class="weather-icon" />
-						<div class="weather-top">
-							<p class="location-date">{{ weather.location }}</p>
-							<p class="current-temp">{{ weather.temperature }}°C</p>
-						</div>
-						<div class="weather-bottom">
-							<p><span class="label">温度范围：</span>{{ weather.tempRange }}</p>
-							<p><span class="label">湿度：</span>{{ weather.humidity }}%</p>
-							<p><span class="label">风向：</span>{{ weather.windDirection }}</p>
-						</div>
-					</div>
-				</div>
-				<div class="module contacts" @click="navigateTo('contacts')">
-					<h2>通讯录</h2>
-					<p>管理你的联系人信息</p>
-				</div>
-				<div class="module accounting" @click="navigateTo('accounting')">
-					<h2>记账</h2>
-					<p>记录你的开支和收入</p>
-				</div>
-				<div class="module eat" @click="navigateTo('eating')">
-					<h2>饮食</h2>
-					<p>查看你的饮食记录</p>
-				</div>
-			</div>
-		</div>
-		<bottom :selectedIcon="selectedIcon" @update:selectedIcon="updateIcon" />
-	</div>
-</template>
+	    <div class="lifeContent">
+	      <div class="modules">
+	        <div class="module weather" v-if="weatherData" @click="navigateTo('weather')">
+	          <div class="weatherData">
+	            <img :src="weatherData.iconUrl" alt="天气图标" class="weather-icon" />
+	            <div class="weather-top">
+	              <p class="location-date">{{ city }}</p>
+	              <!-- button @click="getWeather">获取实时天气</button> -->
+	              <p class="current-temp">{{ weatherData.temperature }}°C</p>
+	            </div>
+	            <div class="weather-bottom">
+	              <p><span class="label">湿度：</span>{{ weatherData.humidity }}%</p>
+	              <p><span class="label">风速：</span>{{ weatherData.windSpeed }}m/s</p>
+	            </div>
+	          </div>
+	        </div>
+	
+	        <!-- Other modules -->
+	        <div class="module contacts" @click="navigateTo('contacts')">
+	          <h2>通讯录</h2>
+	          <p>管理你的联系人信息</p>
+	        </div>
+	        <div class="module accounting" @click="navigateTo('accounting')">
+	          <h2>记账</h2>
+	          <p>记录你的开支和收入</p>
+	        </div>
+	        <div class="module eat" @click="navigateTo('eating')">
+	          <h2>饮食</h2>
+	          <p>查看你的饮食记录</p>
+	        </div>
+	      </div>
+	    </div>
+	    <bottom :selectedIcon="selectedIcon" @update:selectedIcon="updateIcon" />
+	  </div>
+	</template>
 
 <script>
 	import bottom from '@/pages/bottom.vue';
-
-	export default {
-		components: {
-			bottom
-		},
-		data() {
-			return {
-				selectedIcon: uni.getStorageSync('selectedIcon') || 'life',
-				weather: {
-					location: '成都',
-					date: new Date().toLocaleDateString(),
-					description: '晴',
-					temperature: 25,
-					tempRange: '20°C - 30°C',
-					humidity: 60,
-					windDirection: '东北',
-					icon: 'path/to/weather-icon.png'
-				}
-			};
-		},
-		methods: {
-			updateIcon(icon) {
-				this.selectedIcon = icon;
-				uni.setStorageSync('selectedIcon', icon);
-			},
-			navigateTo(page) {
-				const pageMap = {
-					weather: '/pages/life/weather',
-					contacts: '/pages/life/contacts/contacts',
-					accounting: '/pages/life/accounting',
-					eating: '/pages/life/eating'
-				};
-				uni.navigateTo({
-					url: pageMap[page]
-				});
-			}
-		},
-		// mounted() {
-		// 	this.selectedIcon =  'life';
-		// 	console.log(this.weather);
-		// },
+	  
+	  export default {
+	    components: {
+	      bottom,
+	    },
+	    data() {
+	      return {
+	        city: 'Chengdu',
+	        weatherData: null,
+	        selectedIcon: null,
+	        errorMessage: '',
+	      };
+	    },
+	    methods: {
+	      navigateTo(page) {
+	        const pageMap = {
+	          weather: '/pages/life/weather',
+	          contacts: '/pages/life/contacts/contacts',
+	          accounting: '/pages/life/accounting',
+	          eating: '/pages/life/eating',
+	        };
+	        uni.navigateTo({
+	          url: pageMap[page],
+	        });
+	      },
+	      async getWeather() {
+	        try {
+	          const response = await fetch('http://localhost:3000/weather/city?city=Chengdu');
+	          const data = await response.json();
+	
+	          if (data.success) {
+	            this.weatherData = data.data;
+	          } else {
+	            this.errorMessage = '获取天气失败: ' + data.message;
+	          }
+	        } catch (error) {
+	          console.error('请求错误:', error);
+	          this.errorMessage = '请求错误: ' + error.message;
+	        }
+	      },
+	      updateIcon(icon) {
+	        this.selectedIcon = icon;
+	        uni.setStorageSync('selectedIcon', icon);
+	      },
+	    },
+	    mounted() {
+	      //this.selectedIcon = uni.getStorageSync('selectedIcon') || 'life';
+	      this.getWeather(); // Optional: load weather on mount
+	    },
 		onShow() {
 			this.selectedIcon = 'life';
 			uni.setStorageSync('selectedIcon', 'life');
 		},
-	}
+	  };
 </script>
 
 <style scoped>
