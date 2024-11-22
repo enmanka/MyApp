@@ -23,6 +23,9 @@
 export default {
   data() {
     return {
+	  //与后端连接后开启下面注释部分；注释掉示例部分memos:[...]
+	  //memos: [], // 储存备忘录数据
+	  //currentUserId: null, // 当前用户ID
       memos: [
         { text: '完成项目报告', dueTime: new Date('2024-11-15T18:00:00'), completed: false },
         { text: '开会讨论需求', dueTime: new Date('2024-11-13T09:00:00'), completed: true },
@@ -58,18 +61,84 @@ export default {
     toggleComplete(index) {
       // 切换备忘录的完成状态
       this.memos[index].completed = !this.memos[index].completed;
+	  // 发送更新状态到后端
+	        // uni.request({
+	        //   url: '/api/memo/update', // 假设后端更新完成状态的接口
+	        //   method: 'POST',
+	        //   data: {
+	        //     memoId: memo.memoId,
+	        //     completed: memo.completed,
+	        //   },
+	        //   success: (res) => {
+	        //     if (res.statusCode !== 200) {
+	        //       uni.showToast({ title: '更新失败', icon: 'none' });
+	        //     }
+	        //   },
+	        //   fail: () => {
+	        //     uni.showToast({ title: '请求失败', icon: 'none' });
+	        //   },
+	        // });
     },
     deleteMemo(index) {
-      // 删除指定的备忘录
+      // 删除指定的备忘录--连接后端后注释掉下一行
       this.memos.splice(index, 1);
+	  // 调用后端接口删除备忘录
+	        // uni.request({
+	        //   url: '/api/memo/delete', // 假设后端删除备忘录的接口
+	        //   method: 'POST',
+	        //   data: {
+	        //     memoId,
+	        //   },
+	        //   success: (res) => {
+	        //     if (res.statusCode === 200) {
+	        //       this.memos = this.memos.filter((memo) => memo.memoId !== memoId);
+	        //       uni.showToast({ title: '删除成功', icon: 'success' });
+	        //     } else {
+	        //       uni.showToast({ title: '删除失败', icon: 'none' });
+	        //     }
+	        //   },
+	        //   fail: () => {
+	        //     uni.showToast({ title: '请求失败', icon: 'none' });
+	        //   },
+	        // });
+	  
     },
     addMemo() {
       // 跳转到添加备忘录界面
       uni.navigateTo({
         url: '/pages/study/addRemember' // 跳转到添加备忘录页面
       });
-    }
-  }
+    },
+	//从后端获取备忘信息
+	// fetchMemos() {
+	//       // 获取用户的备忘录
+	//       this.currentUserId = uni.getStorageSync('userId');
+	//       if (!this.currentUserId) {
+	//         uni.showToast({ title: '用户未登录', icon: 'none' });
+	//         return;
+	//       }
+	
+	//       uni.request({
+	//         url: '/api/memo/list', // 假设后端获取备忘录列表的接口
+	//         method: 'GET',
+	//         data: { userId: this.currentUserId },
+	//         success: (res) => {
+	//           if (res.statusCode === 200) {
+	//             this.memos = res.data.memos || [];
+	//           } else {
+	//             uni.showToast({ title: '加载备忘录失败', icon: 'none' });
+	//           }
+	//         },
+	//         fail: () => {
+	//           uni.showToast({ title: '请求失败', icon: 'none' });
+	//         },
+	//       });
+	//     },
+  },
+  //调用后端后加载备忘信息
+  // mounted() {
+  //     this.fetchMemos(); // 页面加载时获取备忘录数据
+  //   },
 };
 </script>
 

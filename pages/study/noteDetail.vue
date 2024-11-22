@@ -37,6 +37,8 @@ export default {
       noteTitle: '', // 当前编辑中的标题
       noteContent: '', // 当前编辑中的内容
       editTime: new Date(), // 最近编辑时间
+      currentUserId: null, // 当前用户的ID
+      noteId: null, // 当前笔记ID
     };
   },
   computed: {
@@ -55,38 +57,87 @@ export default {
     updateEditTime() {
       this.editTime = new Date();
     },
+	// 获取笔记的详细信息
+	// fetchNoteDetail(noteId, userId) {
+	//   uni.request({
+	//     url: `/api/note/${noteId}`, // 假设后端接口
+	//     method: 'GET',
+	//     data: {
+	//       userId: userId,  // 传递当前用户ID
+	//       noteId: noteId,   // 传递笔记ID
+	//     },
+	//     success: (res) => {
+	//       if (res.statusCode === 200) {
+	//         const data = res.data;
+	//         // 如果后端返回的数据格式是 { title: '笔记标题', content: '笔记内容' }
+	//         this.originalNoteTitle = data.title || '默认标题';
+	//         this.originalNoteContent = data.content || '笔记内容';
+	//         this.noteTitle = this.originalNoteTitle;
+	//         this.noteContent = this.originalNoteContent;
+	//       } else {
+	//         uni.showToast({ title: '加载失败', icon: 'none' });
+	//       }
+	//     },
+	//     fail: (err) => {
+	//       uni.showToast({ title: '请求失败', icon: 'none' });
+	//     }
+	//   });
+	// },
+
     // 保存笔记
-    saveNote() {
-      if (this.noteTitle.trim() && this.noteContent.trim()) {
-        // 保存逻辑，模拟后端API交互
-        console.log('保存笔记：', {
-          title: this.noteTitle,
-          content: this.noteContent,
-          editTime: this.editTime,
-        });
-        this.originalNoteTitle = this.noteTitle; // 更新原始数据
-        this.originalNoteContent = this.noteContent;
-        alert('笔记已保存！');
-      } else {
-        alert('标题和内容不能为空！');
-      }
-    },
+    // saveNote() {
+    //   if (this.noteTitle.trim() && this.noteContent.trim()) {
+    //     // 保存笔记逻辑，模拟后端API交互
+    //     uni.request({
+    //       url: '/api/note/save',  // 假设后端保存笔记的接口
+    //       method: 'POST',
+    //       data: {
+    //         userId: this.currentUserId,  // 当前用户ID
+    //         noteId: this.noteId,  // 当前笔记ID
+    //         title: this.noteTitle,  // 编辑后的标题
+    //         content: this.noteContent,  // 编辑后的内容
+    //       },
+    //       success: (res) => {
+    //         if (res.statusCode === 200) {
+    //           alert('笔记已保存！');
+    //           // 更新原始数据
+    //           this.originalNoteTitle = this.noteTitle;
+    //           this.originalNoteContent = this.noteContent;
+    //         } else {
+    //           uni.showToast({ title: '保存失败', icon: 'none' });
+    //         }
+    //       },
+    //       fail: (err) => {
+    //         uni.showToast({ title: '请求失败', icon: 'none' });
+    //       }
+    //     });
+    //   } else {
+    //     alert('标题和内容不能为空！');
+    //   }
+    // },
+
     // 取消编辑并恢复到初始状态
     cancelEdit() {
       this.noteTitle = this.originalNoteTitle; // 恢复标题
       this.noteContent = this.originalNoteContent; // 恢复内容
     },
   },
-  mounted() {
-    // 初始化数据，模拟从路由参数中获取笔记详情
-    const params = this.$route.query;
-    this.originalNoteTitle = params.title || '默认标题';
-    this.originalNoteContent = params.content || '笔记内容';
-    //this.noteTitle = this.originalNoteTitle;
-    this.noteContent = this.originalNoteContent;
-  },
+  //与后端连接后开启下面内容
+  // mounted() {
+  //     const userId = uni.getStorageSync('userId');
+      
+  //     this.currentUserId = userId;
+  //     const params = this.$route.query;
+  //     this.noteId = params.id;
+  //     this.fetchNoteDetail(this.noteId, this.currentUserId);
+  //   },
+  
   onLoad(options) {
       this.noteTitle = options.name; // 使用传递的参数
+	  // 从 URL 中获取传递的参数
+	      const noteId = options.id; // 获取笔记的 id
+	      const noteName = options.name; // 获取笔记的 name
+	   this.noteId = noteId; // 保存笔记ID   
     },
 };
 </script>

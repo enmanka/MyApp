@@ -16,18 +16,29 @@
         v-for="(note, index) in filteredNotes" 
         :key="index" 
         class="note-item"
-        @click="viewNoteDetail(note)"
       >
+        <!-- 图标 -->
         <uni-icons type="wallet-filled" size="30" color="#007AFF" class="note-icon" />
-        <span class="note-name">{{ note.name }}</span>
+      
+        <!-- 标题，点击跳转详情页 -->
+        <span 
+          class="note-name" 
+          @click="viewNoteDetail(note)"
+        >
+          {{ note.name }}
+        </span>
+      
+        <!-- 删除按钮 -->
         <uni-icons 
           type="closeempty" 
           size="20" 
           color="#FF4F4F" 
           class="delete-icon" 
-          @click="confirmDelete(note, index)" 
+          @click.stop="confirmDelete(note, index)" 
         />
       </div>
+
+
     </div>
 
     <!-- 添加笔记按钮 -->
@@ -61,15 +72,19 @@ export default {
   data() {
     return {
       searchQuery: '', // 搜索框的内容
+	  //notes: [], // 笔记列表（从后端获取）
+	  //连接后端后注释掉下面内容note:[...]
       notes: [
-        { name: '数学笔记' },
-        { name: '物理笔记' },
-        { name: '编程笔记' },
-        { name: '英语笔记' },
+        { id:1,name: '数学笔记' },
+        { id:2,name: '物理笔记' },
+        { id:3,name: '编程笔记' },
+        { id:4,name: '英语笔记' },
       ],
+	  
       showDeletePopup: false, // 控制删除确认弹框的显示
       noteToDelete: null, // 要删除的笔记
       deleteIndex: null, // 要删除笔记的索引
+	  //userID:null  // 当前用户的 ID（假设已通过登录获取）
     };
   },
   computed: {
@@ -90,31 +105,119 @@ export default {
     // 查看笔记详情
     viewNoteDetail(note) {
       uni.navigateTo({
-        url: `/pages/study/noteDetail?name=${note.name}`, // 跳转到笔记详情页
+        url: `/pages/study/noteDetail?name=${note.name}&id=${note.id}`, // 跳转到笔记详情页
       });
     },
     // 显示删除确认弹框
    
-    confirmDelete(note, index) {
-       
-        this.noteToDelete = note;
-        this.deleteIndex = index;
-        this.$refs.deletePopup.open(); // 手动调用打开弹框
-      
-    },
-
+    confirmDelete(note, index, event) {
+          // 显式阻止冒泡
+          event.stopPropagation();
+          this.noteToDelete = note;
+          this.deleteIndex = index;
+          this.$refs.deletePopup.open();
+        },
+	// 初始化时从后端获取所有笔记
+	    // fetchNotes() {
+	    //   // 发送请求到后端获取当前用户的笔记列表
+	    //   uni.request({
+	    //     url: `/api/notes`, // 假设后端获取笔记的接口为 /api/notes
+	    //     method: 'GET',
+	    //     data: { userId: this.userId }, // 传入用户 ID
+	    //     success: (res) => {
+	    //       if (res.statusCode === 200 && res.data.notes) {
+	    //         this.notes = res.data.notes; // 更新本地笔记列表
+	    //       } else {
+	    //         uni.showToast({
+	    //           title: '获取笔记失败',
+	    //           icon: 'none',
+	    //         });
+	    //       }
+	    //     },
+	    //     fail: (err) => {
+	    //       console.error('获取笔记失败', err);
+	    //       uni.showToast({
+	    //         title: '网络异常',
+	    //         icon: 'none',
+	    //       });
+	    //     },
+	    //   });
+	    // },
+	// 实时搜索笔记（后端联动）
+	    searchNotes() {
+	      // 搜索时调用后端接口
+	      uni.request({
+	        url: `/api/notes/search`, // 假设搜索接口路径为 /api/notes/search
+	        method: 'POST',
+	        data: {
+	          userId: this.userId, // 当前用户 ID
+	          keyword: this.searchQuery, // 搜索关键字
+	        },
+	        success: (res) => {
+	          if (res.statusCode === 200 && res.data.notes) {
+	            this.notes = res.data.notes; // 更新笔记列表为搜索结果
+	          } else {
+	            uni.showToast({
+	              title: '未找到相关笔记',
+	              icon: 'none',
+	            });
+	          }
+	        },
+	        fail: (err) => {
+	          console.error('搜索笔记失败', err);
+	          uni.showToast({
+	            title: '搜索失败',
+	            icon: 'none',
+	          });
+	        },
+	      });
+	    },
     // 删除笔记
     deleteNote() {
-      if (this.deleteIndex !== null) {
-        this.notes.splice(this.deleteIndex, 1); // 删除笔记
-        this.$refs.deletePopup.close(); // 关闭弹框
+      if (this.noteToDelete) {
+        // 调用后端接口删除笔记
+        // uni.request({
+        //   url: `/api/notes/${this.noteToDelete.id}`, // 假设后端删除笔记的接口为 `/api/notes/:id`
+        //   method: 'DELETE',
+        //   success: (res) => {
+        //     if (res.statusCode === 200) {
+        //       // 从本地 notes 数组中移除笔记
+        //       this.notes.splice(this.deleteIndex, 1);
+        //       this.$refs.deletePopup.close(); // 关闭弹框
+        //       uni.showToast({
+        //         title: '笔记删除成功',
+        //         icon: 'success',
+        //       });
+        //     } else {
+        //       uni.showToast({
+        //         title: '删除失败，请重试',
+        //         icon: 'none',
+        //       });
+        //     }
+        //   },
+        //   fail: (err) => {
+        //     console.error('删除笔记失败', err);
+        //     uni.showToast({
+        //       title: '删除失败，请检查网络',
+        //       icon: 'none',
+        //     });
+        //   },
+        // });
       }
     },
+
     // 取消删除
     cancelDelete() {
       this.$refs.deletePopup.close(); // 关闭弹框
     },
   },
+  //连接后端后开启下面注释内容·
+  // 从本地存储获取 userId
+    // const userId = uni.getStorageSync('userId');
+    // if (userId) {
+    //   this.userId = userId; // 将 userId 绑定到组件数据中
+    //   this.fetchNotes();    // 调用获取笔记的方法
+    // } 
 };
 </script>
 
@@ -161,15 +264,17 @@ export default {
   margin-right: 15px;
 }
 
+/* 笔记标题默认样式 */
 .note-name {
   font-size: 16px;
-  color: #333;
-  flex-grow: 1;
+  color: #333; /* 默认颜色 */
+  cursor: pointer; /* 鼠标悬停时显示指针 */
+  transition: color 0.3s ease; /* 添加平滑过渡效果 */
 }
 
-.delete-icon {
-  margin-left: 15px;
-  cursor: pointer;
+/* 鼠标悬停时的样式 */
+.note-name:hover {
+  color: #007AFF; /* 悬停时变为蓝色 */
 }
 
 /* 按钮容器样式 */
@@ -194,6 +299,17 @@ export default {
 .add-icon {
   color: white;
 }
+
+.delete-icon {
+  margin-left: auto; /* 推动到最右侧 */
+  cursor: pointer;
+  transition: transform 0.2s ease; /* 悬停时动画效果 */
+}
+
+.delete-icon:hover {
+  transform: scale(1.2); /* 悬停时稍微放大 */
+}
+
 
 /* 删除弹框样式 */
 .delete-popup .popup-content {
@@ -225,6 +341,7 @@ export default {
 }
 
 .cancel-btn {
+  
   background-color: #ccc;
   color: white;
   border: none;
@@ -232,5 +349,6 @@ export default {
 
 .cancel-btn:hover {
   background-color: #b0b0b0; /* 取消按钮悬停 */
+  transform: scale(1.2); /* 悬停时稍微放大按钮 */
 }
 </style>
