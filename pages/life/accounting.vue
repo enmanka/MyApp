@@ -178,11 +178,10 @@ export default {
     editRecord() {
       const record = this.records[this.selectedRecordIndex];
       const pageUrl = record.type === 'income' ? '/pages/life/income' : '/pages/life/expense';
+	  const category = record.type === 'income' ? record.incomeType : record.expenseType;
 
-      this.deleteRecord(this.selectedRecordIndex);
-	  
 	  uni.navigateTo({
-        url: `${pageUrl}?type=${record.type}&id=${record.recordId}&description=${record.description}&amount=${record.amount}&date=${this.selectedDate}&remark=${record.remark}`
+        url: `${pageUrl}?type=${record.type}&recordId=${record.recordId}&remark=${record.description}&amount=${record.amount}&date=${this.selectedDate}&category=${category}`
       });
 	  
       this.closeModal();
