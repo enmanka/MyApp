@@ -20,8 +20,8 @@
 
 			<!-- 备注和输入框在同一行 -->
 			<div class="remark-container">
-				<label for="remark">备注：</label>
-				<input v-model="remark" id="remark" placeholder="输入备注..." />
+				<label for="remark">食物：</label>
+				<input v-model="remark" id="remark" placeholder="输入具体食物名称..." />
 			</div>
 
 			<!-- 日期选择部分-->
@@ -115,10 +115,10 @@
 				alertMessage: "", // 提示弹窗的消息
 				type: '',
 				description: '',
-				amount: '',
+				quantity: '',
 				date: '',
-				//当某条记录修改时跳转至该页面，id变为非负数
-				id: -1
+				//当某条记录修改时跳转至该页面，id变为具体值
+				id: "none"
 			};
 		},
 		onBackPress() {
@@ -206,30 +206,30 @@
 					return;
 				}
 
-				// 用户选择了类别，输入了金额，并且金额大于0，可以提交
+				// 用户选择了类别，输入了数目，并且数目大于0，可以提交
 				const entryData = {
 					category: this.selectedCategory,
-					amount: this.display,
+					quantity: this.display,
 					remark: this.remark,
 					date: this.currentDate,
 				};
 
-				// 与后端通信的代码，传入id(若id!=-1则需要删除对应日期的对应记录)、userId、日期等数据
-				// 注意：如果需要替换URL和字段名称，请根据后端接口文档进行修改
-				/*
+				// 与后端通信的代码，传入id(若id!=none则需要先删除对应日期的对应记录)、userId、日期等数据
+				
+				this.quantity = this.display;
+				
 				uni.request({
-					url: 'http://localhost:3000/deleteRecord',
+					url: 'http://localhost:3000/diet/addRecord',
 					method: 'POST',
 					data: {
 						userId: this.userId,
-						//若为修改逻辑，则此处的id不为-1，为相应记录的id
+						//若为修改逻辑，则此处的id不为one，为相应记录的id
 						id:this.id,
 						//若为修改逻辑，则此处传递需要删除的原来的那条记录的日期
 						mydate:this.myDate,
 						date: this.currentDate,
-						remark：this.remark,
-						amount:this.amount,
-						type:'expense',
+						remark: this.remark,
+						quantity: this.quantity,
 						category: this.selectedCategory,
 					},
 					success: (res) => {
@@ -243,14 +243,14 @@
 							          	});
 							          }, 1000);
 						} else {
-							console.error('删除失败:', res.data.message || '未知错误');
+							console.error('添加失败:', res.data.message || '未知错误');
 						}
 					},
 					fail: (err) => {
 						console.error('请求失败:', err);
 					}
 				});
-				*/
+				
 
 				console.log("提交的数据：", entryData);
 				this.showSuccessPopup = true; // 显示“添加成功”弹窗

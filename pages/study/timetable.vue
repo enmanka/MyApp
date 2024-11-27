@@ -27,7 +27,7 @@
 			</div>
 		</div>
 
-		<!-- 课程详情弹窗 -->
+		<!-- 弹窗部分 -->
 		<div v-if="showPopup" class="popup">
 			<div class="popup-content">
 				<!-- 右上角关闭按钮 -->
@@ -36,9 +36,10 @@
 				<p>上课地点：{{ popupData.address }}</p>
 				<p>教师：{{ popupData.teacher }}</p>
 				<p>教师联系方式：{{ popupData.contact }}</p>
-				<p>行课周数：{{ popupData.week }}</p>
+				<p>起始周数：{{ popupData.startWeek || "未填写" }}</p>
+				<p>结束周数：{{ popupData.endWeek || "未填写" }}</p>
 				<p>备注：{{ popupData.notes }}</p>
-				<!-- 修改与删除按钮放在同一行并带有按动动画 -->
+				<!-- 修改与删除按钮 -->
 				<div class="buttons">
 					<button @click="modify" class="modify-btn">修改</button>
 					<button @click="deleteClass" class="delete-btn">删除</button>

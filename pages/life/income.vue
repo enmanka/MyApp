@@ -117,8 +117,8 @@
 				description: '',
 				amount: '',
 				date: '',
-				//当某条记录修改时跳转至该页面，id变为非负数
-				id: -1
+				//当某条记录修改时跳转至该页面，id变为具体的值
+				id: "none"
 			};
 		},
 		onBackPress() {
@@ -130,11 +130,12 @@
 		},
 		onLoad(options) {
 			// 设置初始值
-			this.selectedCategory = options.description || null;
+			this.selectedCategory = options.category || null;
 			this.display = options.amount || "";
 			this.remark = options.remark || "";
 			this.currentDate = options.date || this.currentDate;
 			this.myDate = options.date || "";
+			this.id = options.recordId || "none";
 			// 如果有类别，自动选中
 			const categoryIndex = this.circles.findIndex(circle => circle.category === this.selectedCategory);
 			if (categoryIndex !== -1) {

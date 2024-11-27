@@ -37,6 +37,8 @@ export default {
       noteTitle: '', // 当前笔记标题
       noteContent: '', // 当前笔记内容
       editTime: new Date(), // 最近编辑时间
+	  currentUserId: null, // 当前用户的ID
+	  //noteId: null, // 当前笔记ID
     };
   },
   computed: {
@@ -56,29 +58,43 @@ export default {
       this.editTime = new Date(); // 每次输入时更新编辑时间
     },
     // 保存笔记
-    saveNote() {
-      if (this.noteTitle.trim() && this.noteContent.trim()) {
-        // 在此执行保存操作，例如保存到本地存储或后端API
-        console.log("标题:", this.noteTitle);
-        console.log("笔记内容:", this.noteContent);
-        this.originalNoteTitle = this.noteTitle; // 更新原始数据
-        this.originalNoteContent = this.noteContent;
-        alert("笔记已保存！");
-      } else {
-        alert("标题和内容不能为空！");
-      }
-    },
+    // saveNote() {
+    //   if (this.noteTitle.trim() && this.noteContent.trim()) {
+    //     // 保存笔记逻辑，模拟后端API交互
+    //     uni.request({
+    //       url: '/api/note/save',  // 假设后端保存笔记的接口
+    //       method: 'POST',
+    //       data: {
+    //         userId: this.currentUserId,  // 当前用户ID
+    //
+    //         title: this.noteTitle,  // 编辑后的标题
+    //         content: this.noteContent,  // 编辑后的内容
+    //       },
+    //       success: (res) => {
+    //         if (res.statusCode === 200) {
+    //           alert('笔记已保存！');
+    //           // 更新原始数据
+    //           this.originalNoteTitle = this.noteTitle;
+    //           this.originalNoteContent = this.noteContent;
+    //         } else {
+    //           uni.showToast({ title: '保存失败', icon: 'none' });
+    //         }
+    //       },
+    //       fail: (err) => {
+    //         uni.showToast({ title: '请求失败', icon: 'none' });
+    //       }
+    //     });
+    //   } else {
+    //     alert('标题和内容不能为空！');
+    //   }
+    // },
     // 取消编辑，恢复到原始数据
     cancelEdit() {
       this.noteTitle = this.originalNoteTitle; // 恢复原始标题
       this.noteContent = this.originalNoteContent; // 恢复原始内容
     },
   },
-  mounted() {
-    // 初始化时存储笔记的原始标题和内容
-    this.originalNoteTitle = this.noteTitle;
-    this.originalNoteContent = this.noteContent;
-  },
+  
 };
 </script>
 

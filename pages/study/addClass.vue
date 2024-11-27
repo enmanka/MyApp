@@ -298,4 +298,35 @@
 	.close-button:hover {
 		background-color: #357abd;
 	}
+
+	.week-range {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.week-input {
+		flex: 1;
+	}
+
+	.week-input label {
+		display: block;
+		margin-bottom: 5px;
+		color: #666;
+	}
+
+	.week-input input {
+		width: 90%;
+		padding: 8px;
+		border: 1px solid #ddd;
+		border-radius: 8px;
+		font-size: 14px;
+	}
+
+	.error-message {
+		color: #d9363e;
+		margin-top: 5px;
+		font-size: 14px;
+	}
 </style>

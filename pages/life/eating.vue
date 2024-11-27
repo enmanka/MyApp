@@ -5,11 +5,11 @@
       <div class="section-header">
         <h2>饮食计划</h2>
         <!-- 日期选择器 -->
-        <div class="date-selector">
+        <!-- <div class="date-selector">
           <picker mode="date" @change="changeDate" :value="selectedDate">
             <text>{{ selectedDate }}</text>
           </picker>
-        </div>
+        </div> -->
         <uni-icons type="plusempty" size="30" class="add-icon" @click="addPlan" />
       </div>
       <ul class="plan-list">
@@ -29,13 +29,23 @@
     <div class="section">
       <div class="section-header">
         <h2>饮食记录</h2>
+		<!-- 日期选择器 -->
+		<div class="date-selector">
+		  <picker mode="date" @change="changeDate" :value="selectedDate">
+		    <text>{{ selectedDate }}</text>
+		  </picker>
+		</div>
         <uni-icons type="plusempty" size="30" class="add-icon" @click="addRecord" />
       </div>
       <ul class="record-list">
-        <li v-for="(record, index) in filteredRecords" :key="index" class="record-item">
+		<!-- 如果没有记录，显示提示信息 -->
+		<view v-if="records.length === 0">
+			<text>没有记录</text>
+		</view>
+        <li v-for="(record, index) in records" :key="index" class="record-item">
           <div class="record-content">
-            <span class="record-info">{{ record.foodCategory }} - {{ record.quantity }}份</span>
-            <span class="record-date">{{ record.date }}</span>
+            <span class="record-info">{{ record.foodCategory }}类：{{ record.foodItem }} - {{ record.quantity }}份</span>
+            <!-- <span class="record-date">{{ record.date }}</span> -->
           </div>
           <uni-icons type="closeempty" size="20" class="delete-icon" @click="deleteRecord(index)" />
         </li>
@@ -48,14 +58,15 @@
 export default {
   data() {
     return {
+	  userId: '',
       selectedDate: new Date().toISOString().split("T")[0],
       plans: [
         { food: '苹果', quantity: 2, date: '2024-11-11', completed: false },
         { food: '香蕉', quantity: 1, date: '2024-11-12', completed: true },
       ],
       records: [
-        { foodCategory: '水果', quantity: 2, date: '2024-11-11' },
-        { foodCategory: '蔬菜', quantity: 1, date: '2024-11-12' },
+        // { foodCategory: '水果', quantity: 2, date: '2024-11-11' },
+        // { foodCategory: '蔬菜', quantity: 1, date: '2024-11-12' },
       ],
     };
   },
@@ -63,9 +74,9 @@ export default {
     filteredPlans() {
       return this.plans.filter(plan => plan.date === this.selectedDate);
     },
-    filteredRecords() {
-      return this.records.filter(record => record.date === this.selectedDate);
-    }
+    // filteredRecords() {
+    //   return this.records.filter(record => record.date === this.selectedDate);
+    // }
   },
   onBackPress() {
   	// 在这里实现返回按钮点击后的逻辑
@@ -74,10 +85,39 @@ export default {
   	});
   	return true; // 阻止默认的返回操作
   },
+  created() {
+    this.userId = getApp().globalData.userId;
+  
+    // 页面加载时根据日期和用户ID获取当前饮食记录条目
+    this.fetchRecords();
+  },
   methods: {
     changeDate(event) {
       this.selectedDate = event.detail.value;
+	  
+	  // 切换日期时向后端请求对应日期的数据
+	  this.fetchRecords();
     },
+	fetchRecords() {
+	  uni.request({
+	    url: 'http://localhost:3000/diet/getRecords', // 后端接口地址
+	    method: 'POST',
+	    data: {
+	      userId: this.userId,
+	      date: this.selectedDate
+	    },
+	    success: (res) => {
+	      if (res.data.code === 200) {
+	        this.records = res.data.records;
+	      } else {
+	        console.error('获取饮食记录数据失败:', res.data.message || '未知错误');
+	      }
+	    },
+	    fail: (err) => {
+	      console.error('请求失败:', err);
+	    }
+	  });
+	},
     addPlan() {
       // 跳转到添加饮食计划页面
             uni.navigateTo({
@@ -97,6 +137,26 @@ export default {
             });
     },
     deleteRecord(index) {
+	  // 删除时根据用户ID和条目ID删除该条目
+	  const recordId = this.records[index].recordId;  // 获取饮食记录 ID
+	  uni.request({
+	    url: 'http://localhost:3000/diet/deleteRecord',
+	    method: 'POST',
+	    data: {
+	      userId: this.userId,
+	      recordId: recordId
+	    },
+	    success: (res) => {
+	      if (res.data.code === 200) {
+	        this.records.splice(index, 1);
+	      } else {
+	        console.error('删除饮食记录失败:', res.data.message || '未知错误');
+	      }
+	    },
+	    fail: (err) => {
+	      console.error('请求失败:', err);
+	    }
+	  });
       this.records.splice(index, 1);
     }
   },

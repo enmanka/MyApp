@@ -20,30 +20,61 @@
 export default {
   data() {
     return {
-      memoText: '',
-      dueTime: '',
+      memoText: '',//备忘信息
+      dueTime: '',//截至时间
+	  minDueTime: new Date().toISOString().slice(0, 16), // 设置最小可选时间为当前时间
+	  currentUserId: null, // 当前用户ID
     };
   },
   methods: {
     saveMemo() {
       if (this.memoText && this.dueTime) {
         const newMemo = {
+          userId: this.currentUserId, // 当前用户ID
           text: this.memoText,
-          dueTime: new Date(this.dueTime),
-          completed: false
+          dueTime: new Date(this.dueTime).toISOString(),
+          completed: false,
         };
-        // 将新的备忘录保存到全局或父组件
-        // 这里可以使用 uni.setStorage 或其他方式保存
-        uni.setStorageSync('newMemo', newMemo);
-        uni.navigateBack(); // 返回上一页
+        
+		// 调用后端保存备忘信息接口
+		        // uni.request({
+		        //   url: '/api/memo/save', // 假设后端保存备忘录的接口
+		        //   method: 'POST',
+		        //   data: newMemo,
+		        //   success: (res) => {
+		        //     if (res.statusCode === 200) {
+		        //       uni.showToast({ title: '保存成功', icon: 'success' });
+		        //       uni.navigateBack(); // 保存成功后返回上一页
+		        //     } else {
+		        //       uni.showToast({ title: '保存失败', icon: 'none' });
+		        //     }
+		        //   },
+		        //   fail: () => {
+		        //     uni.showToast({ title: '请求失败', icon: 'none' });
+		        //   },
+		        // });		
+        
       } else {
         uni.showToast({ title: '请填写备忘录内容和时间', icon: 'none' });
       }
     },
     cancel() {
       uni.navigateBack(); // 取消时返回上一页
-    }
-  }
+    },
+	//与后端连接后开启下面代码
+	// fetchCurrentUserId() {
+	//       // 从本地存储中获取当前用户ID
+	//       this.currentUserId = uni.getStorageSync('userId');
+	//       if (!this.currentUserId) {
+	//         uni.showToast({ title: '用户未登录', icon: 'none' });
+	//         uni.navigateBack(); // 返回上一页
+	//       }
+	// },
+  },
+  //与后端连接后打开下面代码
+  // mounted() {
+  //     this.fetchCurrentUserId(); // 页面加载时获取当前用户ID
+  //   },
 };
 </script>
 
