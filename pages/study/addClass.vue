@@ -88,7 +88,7 @@
 		this.classes.address = query.address || "";
 		this.classes.teacher = query.teacher || "";
 		this.classes.contact = query.contact || "";
-		this.classes.week = query.week || "";
+		// this.classes.week = query.week || "";
 		this.classes.id = query.id || ""; // 获取 id
 		this.classes.notes = query.notes || "";
 		//从0开始，记录课程所处的日期
@@ -96,8 +96,8 @@
 		//记录课程的节数
 		// this.classes.period = query.period || "";
 		
-		this.classes.weekDay = query.dayIndex || -1;
-		this.classes.period = query.periodIndex || -1;
+		this.classes.weekday = query.weekday||-1;
+		this.classes.classtime = query.classtime || -1;
 		// 使用 id 做其他操作，例如查询该课程的详细信息
 		console.log(this.classes.weekDay);
 		if (query.userId) {
@@ -129,10 +129,10 @@
 	        newRecord: {
 	          classname: this.classes.name,
 	          teacher_name: this.classes.teacher,
-	          classtime: this.classes.period,
+	          classtime: this.classes.classtime,
 	          start_week: this.classes.weekStart,
 	          end_week: this.classes.weekEnd,
-	          weekday: this.classes.weekDay,
+	          weekday: this.classes.weekday,
 	          timetable_note: this.classes.notes,
 	          timetable_contact: this.classes.contact,
 	          location: this.classes.address,

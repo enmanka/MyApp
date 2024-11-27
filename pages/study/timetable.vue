@@ -168,7 +168,7 @@ export default {
      */
     modify() {
       //const { name, address, teacher, contact, week, id, notes, weekDay, period } = this.popupData;
-      const pageUrl = `/pages/study/addClass?dayIndex=${weekday}&periodIndex=${periodIndex}&classname=${classname}&location=${location}&teacher=${teacher_name}&id=${timetable_id}`;
+      const pageUrl = `/pages/study/addClass?weekday=${weekday}&classtime=${classtime}&classname=${classname}&location=${location}&teacher=${teacher_name}&id=${timetable_id}`;
       uni.navigateTo({ url: pageUrl });
       this.closePopup();
       this.mapTimetableToMatrix(); // 重新映射课表矩阵
