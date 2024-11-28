@@ -11,12 +11,17 @@
 			<!-- 个人资料选项 -->
 			<view class="from">
 				<uni-list :border="false">
-					<uni-list-item showArrow title="个人资料" to="./persondata"></uni-list-item>
-					<uni-list-item showArrow title="我的订单" to="../../pages/order/order"></uni-list-item>
+					<uni-list-item showArrow title="个人资料" to="./persondata">
+						<template v-slot:right>
+							<span class="arrow-icon">&gt;</span> <!-- 自定义向右箭头 -->
+						</template>
+					</uni-list-item>
+					<div class="divider"></div>
+					<!-- <uni-list-item showArrow title="我的订单" to="../../pages/order/order"></uni-list-item>
 					<uni-list-item showArrow title="我的收藏" to="../../pages/myCollection/myCollection"></uni-list-item>
 					<uni-list-item showArrow title="地址管理" to="../../pages/addresslist/addresslist"></uni-list-item>
 					<uni-list-item showArrow title="安全中心"
-						to="../../pages/securitycenter/securitycenter"></uni-list-item>
+						to="../../pages/securitycenter/securitycenter"></uni-list-item> -->
 				</uni-list>
 			</view>
 		</view>
@@ -129,5 +134,26 @@
 	.from {
 		width: 100%;
 		margin-top: 20px;
+	}
+
+	/* 横线样式 */
+	.divider {
+		height: 1px;
+		background-color: #f0f0f0;
+		/* 浅灰色 */
+		margin: 0px auto;
+		/* 上下间距 + 水平居中 */
+		width: 90%;
+		/* 横线宽度 */
+	}
+
+	/* 向右箭头样式 */
+	.arrow-icon {
+		font-size: 16px;
+		/* 调整箭头大小 */
+		color: #999;
+		/* 设置箭头颜色为浅灰色 */
+		margin-left: 5px;
+		/* 调整箭头与文字的距离 */
 	}
 </style>

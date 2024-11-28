@@ -205,7 +205,7 @@
 							});
 							// 登录成功后跳转到主页
 							uni.navigateTo({
-								url: '/pages/home'
+								url: '/pages/life/index'
 							});
 						} else {
 							uni.showToast({
@@ -271,7 +271,7 @@
 							});
 							// 注册成功后跳转到主页
 							uni.navigateTo({
-								url: '/pages/home'
+								url: '/pages/life/index'
 							});
 						} else {
 							uni.showToast({
