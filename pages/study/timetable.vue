@@ -50,392 +50,224 @@
 </template>
 
 <script>
-import { onShow } from "@dcloudio/uni-app";
+	import {
+		onShow
+	} from "@dcloudio/uni-app";
 
-export default {
-  data() {
-    return {
-      days: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
-      periods: Array.from({ length: 12 }, (_, i) => `第${i + 1}节`),
-      activeCell: null, // 用于跟踪被点击的格子
-      classData: [], // 存储课程数据
-      timetableMatrix: [], // 存储按时间表分配的课程数据
-      showPopup: false, // 控制弹窗显示
-      popupData: {}, // 存储弹窗的课程详情数据
-      userId: "", // 用户ID
-      loading: false, // 控制加载状态
-    };
-  },
-  mounted() {
-    // 从全局变量获取 userId
-    this.userId = getApp().globalData.userId || "";
-    // 加载课程数据
-    this.fetchTimetable();
-  },
-  methods: {
-    /**
-     * 获取课程表数据
-     */
-    fetchTimetable() {
-      if (!this.userId) {
-        uni.showToast({ title: "用户未登录", icon: "error" });
-        return;
-      }
-      this.loading = true;
-      uni.request({
-        url: "http://localhost:3000/timetable/getTimetable", // 后端接口地址
-        method: "POST",
-        data: { userId: this.userId },
-        success: (res) => {
-          this.loading = false;
-          if (res.data.code === 200) {
-            this.classData = res.data.classData || [];
-            this.mapTimetableToMatrix();
-          } else {
-            uni.showToast({
-              title: res.data.message || "获取课程表失败",
-              icon: "none",
-            });
-          }
-        },
-        fail: (err) => {
-          this.loading = false;
-          console.error("请求失败:", err);
-          uni.showToast({ title: "网络错误，请稍后再试", icon: "none" });
-        },
-      });
-    },
+	export default {
+		data() {
+			return {
+				days: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
+				periods: Array.from({
+					length: 12
+				}, (_, i) => `第${i + 1}节`),
+				activeCell: null, // 用于跟踪被点击的格子
+				classData: [], // 存储课程数据
+				showPopup: false, // 控制弹窗显示
+				popupData: {}, // 存储弹窗的课程详情数据
+				userId: "", // 用户ID
+			};
+		},
+		mounted() {
+			// 示例课程数据
+			// this.classData = [{
+			// 		id: 1, // 确保每个课程项有 id
+			// 		name: "数学分析",
+			// 		teacher: "张老师",
+			// 		weekDay: 0,
+			// 		period: 1,
+			// 		address: "教室1",
+			// 		contact: "123456789",
+			// 		startWeek: "",
+			// 		endWeek:9,
+			// 		notes: "无"
+			// 	},
+			// 	{
+			// 		id: 2,
+			// 		name: "线性代数",
+			// 		teacher: "李老师",
+			// 		weekDay: 2,
+			// 		period: 2,
+			// 		address: "教室1",
+			// 		contact: "123456789",
+			// 		startWeek: 1,
+			// 		endWeek:9,
+			// 		notes: "无"
+			// 	},
+			// 	{
+			// 		id: 3,
+			// 		name: "大学物理",
+			// 		teacher: "王老师",
+			// 		weekDay: 4,
+			// 		period: 4,
+			// 		address: "教室1",
+			// 		contact: "123456789",
+			// 		startWeek: 1,
+			// 		endWeek:9,
+			// 		notes: "无"
+			// 	},
+			// 	{
+			// 		id: 4,
+			// 		name: "英语口语",
+			// 		teacher: "赵老师",
+			// 		weekDay: 1,
+			// 		period: 3,
+			// 		address: "教室1",
+			// 		contact: "123456789",
+			// 		startWeek: 1,
+			// 		endWeek:9,
+			// 		notes: "无"
+			// 	},
+			// ];
+			// 页面展示时获取课程数据
+			this.userId = getApp().globalData.userId;
 
-    /**
-     * 将课程数据映射到课表矩阵
-     */
-    mapTimetableToMatrix() {
-	////// 此处添加通过userid获取数据并显示的逻辑，接口见apifox
-      this.timetableMatrix = Array.from({ length: 12 }, () => Array(7).fill(null));
-      this.classData.forEach((item) => {
-        const { weekday, classtime } = item;
-        const dayIndex = weekday - 1;
-        const periodIndex = classtime - 1;
-        if (dayIndex >= 0 && dayIndex < 7 && periodIndex >= 0 && periodIndex < 12) {
-          this.timetableMatrix[periodIndex][dayIndex] = item;
-        }
-      });
+			// 页面加载时根据用户ID获取课程信息（注意：星期从0（代表星期一）开始，课堂节次从1开始！）
+			this.loadClassData();
+		},
+		onBackPress() {
+			// 在这里实现返回按钮点击后的逻辑
+			uni.redirectTo({
+				url: '/pages/study/index' // 替换为你指定的目标页面路径
+			});
+			return true; // 阻止默认的返回操作
+		},
+		methods: {
+			// 获取指定单元格的课程数据
+			getClassData(rowIndex, day) {
+				const weekDayIndex = this.days.indexOf(day); // 获取 day 的索引
+				const classInfo = this.classData.find(
+					(item) => item.weekDay === weekDayIndex && item.period === rowIndex + 1
+				);
+				return classInfo;
+			},
+			// 新增的加载数据函数
+			loadClassData() {
+				uni.request({
+					url: 'http://localhost:3000/timetable/getTimeTable', // 后端接口地址
+					method: 'POST',
+					data: {
+						userId: this.userId, // 当前用户 ID
+					},
+					success: (res) => {
+						if (res.data.code === 200) {
+							const records = Array.isArray(res.data.classData) ? res.data.classData : [];
+							// 更新课程数据
+							this.classData = records.map((item) => ({
+								id: item.timetable_id, // 课程ID
+								name: item.classname, // 课程名称
+								teacher: item.teacher_name, // 授课老师
+								weekDay: item.weekday, // 上课星期几
+								period: parseInt(item.classtime), // 上课节次
+								address: item.location, // 上课地点
+								contact: item.timetable_contact, // 联系方式
+								startWeek: item.start_week, // 开始周
+								endWeek: item.end_week, // 结束周
+								notes: item.timetable_note, // 备注
+							}));
+						} else {
+							console.error('获取课表数据失败:', res.data.message || '未知错误');
+						}
+					},
+					fail: (err) => {
+						console.error('请求失败:', err);
+					}
+				});
+			},
+			// 点击单元格事件
+			handleCellClick(rowIndex, day) {
+				console.log(this.classData);
+				// 获取当前格子对应的课程数据
+				const classData = this.getClassData(rowIndex, day);
 
-    },
+				// 如果当前格子已经有课程，直接返回，不执行添加课程操作
+				if (classData) {
+					return; // 课程已存在，不进行操作
+				}
 
-    /**
-     * 获取指定单元格的课程数据
-     */
-    getClassData(rowIndex, day) {
-      const dayIndex = this.days.indexOf(day);
-      return this.timetableMatrix[rowIndex][dayIndex];
-    },
+				// 如果没有课程，执行添加课程的逻辑
+				this.activeCell = `${rowIndex}-${day}`; // 设置点击状态
+				console.log(rowIndex + 1);
+				console.log(this.days.indexOf(day));
+				const ret = this.days.indexOf(day);
+				const ret1 = rowIndex + 1;
+				setTimeout(() => {
+					this.activeCell = null;
+					uni.navigateTo({
+						url: `/pages/study/addClass?weekDay=${ret}&period=${ret1}`
+					});
+				}, 200); // 点击效果持续200毫秒
+			},
 
-    /**
-     * 点击单元格事件
-     */
-    handleCellClick(rowIndex, day) {
-      const classData = this.getClassData(rowIndex, day);
-      if (classData) {
-        return; // 如果当前格子已经有课程，直接返回
-      }
-      this.activeCell = `${rowIndex}-${day}`;
-      setTimeout(() => {
-        this.activeCell = null;
-        uni.navigateTo({
-          url: `/pages/study/addClass?weekday=${this.days.indexOf(day) + 1}&classtime=${rowIndex + 1}`,
-        });
-      }, 200); // 点击效果持续200毫秒
-    },
+			// 长按显示课程详情
+			showClassDetails(rowIndex, day) {
+				const data = this.getClassData(rowIndex, day);
+				if (data) {
+					// 在 popupData 中包含 id
+					this.popupData = {
+						...data
+					}; // 使用展开操作符复制课程数据
+					this.showPopup = true;
+				}
+			},
+			closePopup() {
+				this.showPopup = false;
+			},
+			modify() {
+				// 获取当前课程的原始数据
+				const classData = this.popupData;
+				console.log(classData.id);
 
-    /**
-     * 长按显示课程详情
-     */
-    showClassDetails(rowIndex, day) {
-      const data = this.getClassData(rowIndex, day);
-      if (data) {
-        this.popupData = { ...data };
-        this.showPopup = true;
-      }
-    },
+				// 构建传递的数据（有误，已注释）
+				// const queryParams = new URLSearchParams({
+				// 	name: classData.name,
+				// 	address: classData.address,
+				// 	teacher: classData.teacher,
+				// 	contact: classData.contact,
+				// 	week: classData.week,
+				// 	id: classData.id,
+				// 	notes: classData.notes
+				// }).toString();
 
-    closePopup() {
-      this.showPopup = false;
-    },
-
-    /**
-     * 修改课程详情
-     */
-    modify() {
-      //const { name, address, teacher, contact, week, id, notes, weekDay, period } = this.popupData;
-      const pageUrl = `/pages/study/addClass?weekday=${weekday}&classtime=${classtime}&classname=${classname}&location=${location}&teacher=${teacher_name}&id=${timetable_id}`;
-      uni.navigateTo({ url: pageUrl });
-      this.closePopup();
-      this.mapTimetableToMatrix(); // 重新映射课表矩阵
-    },
-
-    /**
-     * 删除课程
-     */
-    deleteClass() {
-      // 后端请求部分注释
-      uni.request({
-        url: 'http://localhost:3000/timetable/deleteClass', // 后端接口地址
-        method: 'POST',
-        data: {
-          userId: this.userId,
-		  
-          id: this.popupData.id, // 课程数据以id为主码
-        },
-        success: (res) => {
-          if (res.data.code === 200) {
-            this.classData = this.classData.filter(
-              (item) => item.id !== this.popupData.id
-            ); // 更新本地数据
-            this.showPopup = false; // 关闭弹窗
-          } else {
-            console.error('删除失败:', res.data.message || '未知错误');
-          }
-        },
-        fail: (err) => {
-          console.error('请求失败:', err);
-        }
-      });
-
-      // 模拟删除后更新页面
-      this.classData = this.classData.filter(
-        (item) => item.id !== this.popupData.id
-      );
-      this.showPopup = false; // 关闭弹窗
-    },
-  },
-};
-</script>
-
-	 
-	  //deleteClass() {
-	  		// 后端请求部分注释
-	  		// uni.request({
-	  		// 	url: 'http://localhost:3000/deleteClass', // 后端接口地址
-	  		// 	method: 'POST',
-	  		// 	data: {
-	  		// 		userId: this.userId,
-	  		// 		id: this.popupData.id, // 课程数据以id为主码
-	  		// 	},
-	  		// 	success: (res) => {
-	  		// 		if (res.data.code === 200) {
-	  		// 			this.classData = this.classData.filter(
-	  		// 				(item) => item.id !== this.popupData.id
-	  		// 			); // 更新本地数据
-	  		// 			this.showPopup = false; // 关闭弹窗
-	  		// 		} else {
-	  		// 			console.error('删除失败:', res.data.message || '未知错误');
-	  		// 		}
-	  		// 	},
-	  		// 	fail: (err) => {
-	  		// 		console.error('请求失败:', err);
-	  		// 	}
-	  		// });
-	  		// 模拟删除后更新页面
-	  	// 	this.classData = this.classData.filter(
-	  	// 		(item) => item.id !== this.popupData.id
-	  	// 	);
-	  	// 	this.showPopup = false; // 关闭弹窗
-	  	// },
-	  //};
-
-	// import {
-	// 	onShow
-	// } from "@dcloudio/uni-app";
-
-	// export default {
-	// 	data() {
-	// 		return {
-	// 			days: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
-	// 			periods: Array.from({
-	// 				length: 12
-	// 			}, (_, i) => `第${i + 1}节`),
-	// 			activeCell: null, // 用于跟踪被点击的格子
-	// 			classData: [], // 存储课程数据
-	// 			showPopup: false, // 控制弹窗显示
-	// 			popupData: {}, // 存储弹窗的课程详情数据
-	// 			userId: "", // 用户ID
-	// 		};
-	// 	},
-	// 	mounted() {
-	// 		// 示例课程数据
-	// 		this.classData = [{
-	// 				id: 1, // 确保每个课程项有 id
-	// 				name: "数学分析",
-	// 				teacher: "张老师",
-	// 				weekDay: 0,
-	// 				period: 1,
-	// 				address: "教室1",
-	// 				contact: "123456789",
-	// 				week: "第1、2、3周",
-	// 				notes: "无"
-	// 			},
-	// 			{
-	// 				id: 2,
-	// 				name: "线性代数",
-	// 				teacher: "李老师",
-	// 				weekDay: 2,
-	// 				period: 2
-	// 			},
-	// 			{
-	// 				id: 3,
-	// 				name: "大学物理",
-	// 				teacher: "王老师",
-	// 				weekDay: 4,
-	// 				period: 4
-	// 			},
-	// 			{
-	// 				id: 4,
-	// 				name: "英语口语",
-	// 				teacher: "赵老师",
-	// 				weekDay: 1,
-	// 				period: 3
-	// 			},
-	// 		];
-	// 		// 页面展示时获取课程数据
-	// 		this.userId = getApp().globalData.userId;
-
-	// 		// 页面加载时根据用户ID获取课程信息（注意：星期从0（代表星期一）开始，课堂节次从1开始！）
-	// 		/*
-	// 		uni.request({
-	// 			url: 'http://localhost:3000/getRecords', // 后端接口地址
-	// 			method: 'POST',
-	// 			data: {
-	// 				userId: this.userId,
-	// 			},
-	// 			success: (res) => {
-	// 				if (res.data.code === 200) {
-	// 					this.classData = res.data.classData;
-	// 					this.updateTotals();
-	// 				} else {
-	// 					console.error('获取账单数据失败:', res.data.message || '未知错误');
-	// 				}
-	// 			},
-	// 			fail: (err) => {
-	// 				console.error('请求失败:', err);
-	// 			}
-	// 		});
-	// 		*/
-	// 	},
-	// 	onBackPress() {
-	// 		// 在这里实现返回按钮点击后的逻辑
-	// 		uni.redirectTo({
-	// 			url: '/pages/study/index' // 替换为你指定的目标页面路径
-	// 		});
-	// 		return true; // 阻止默认的返回操作
-	// 	},
-	// 	methods: {
-	// 		// 获取指定单元格的课程数据
-	// 		getClassData(rowIndex, day) {
-	// 			const weekDayIndex = this.days.indexOf(day); // 获取 day 的索引
-	// 			const classInfo = this.classData.find(
-	// 				(item) => item.weekDay === weekDayIndex && item.period === rowIndex + 1
-	// 			);
-	// 			return classInfo;
-	// 		},
-
-	// 		// 点击单元格事件
-	// 		handleCellClick(rowIndex, day) {
-	// 			// 获取当前格子对应的课程数据
-	// 			const classData = this.getClassData(rowIndex, day);
-
-	// 			// 如果当前格子已经有课程，直接返回，不执行添加课程操作
-	// 			if (classData) {
-	// 				return; // 课程已存在，不进行操作
-	// 			}
-
-	// 			// 如果没有课程，执行添加课程的逻辑
-	// 			this.activeCell = `${rowIndex}-${day}`; // 设置点击状态
-	// 			console.log(rowIndex+1);
-	// 			console.log(this.days.indexOf(day));
-	// 			const ret=this.days.indexOf(day);
-	// 			const ret1=rowIndex+1;
-	// 			setTimeout(() => {
-	// 				this.activeCell = null;
-	// 				uni.navigateTo({
-	// 					url: `/pages/study/addClass?weekDay=${ret}&period=${ret1}`
-	// 				});
-	// 			}, 200); // 点击效果持续200毫秒
-	// 		},
-
-	// 		// 长按显示课程详情
-	// 		showClassDetails(rowIndex, day) {
-	// 			const data = this.getClassData(rowIndex, day);
-	// 			if (data) {
-	// 				// 在 popupData 中包含 id
-	// 				this.popupData = {
-	// 					...data
-	// 				}; // 使用展开操作符复制课程数据
-	// 				this.showPopup = true;
-	// 			}
-	// 		},
-	// 		closePopup() {
-	// 			this.showPopup = false;
-	// 		},
-	// 		modify() {
-	// 			// 获取当前课程的原始数据
-	// 			const classData = this.popupData;
-
-	// 			// 构建传递的数据（有误，已注释）
-	// 			// const queryParams = new URLSearchParams({
-	// 			// 	name: classData.name,
-	// 			// 	address: classData.address,
-	// 			// 	teacher: classData.teacher,
-	// 			// 	contact: classData.contact,
-	// 			// 	week: classData.week,
-	// 			// 	id: classData.id,
-	// 			// 	notes: classData.notes
-	// 			// }).toString();
-
-	// 			// 页面跳转，并将数据作为查询参数传递
-	// 			// 手动拼接查询参数
-	// 			const pageUrl =
-	// 				`/pages/study/addClass?name=${classData.name}&address=${classData.address}&teacher=${classData.teacher}&contact=${classData.contact}&week=${classData.week}&id=${classData.id}&notes=${classData.notes}&weekDay=${classData.weekDay}&period=${classData.period}`;
-	// 			uni.navigateTo({
-	// 				url: pageUrl
-	// 			});
-	// 			this.closePopup();
-	// 		},
-			
+				// 页面跳转，并将数据作为查询参数传递
+				// 手动拼接查询参数
+				const pageUrl =
+					`/pages/study/addClass?name=${classData.name}&address=${classData.address}&teacher=${classData.teacher}&contact=${classData.contact}&startWeek=${classData.startWeek}&endWeek=${classData.endWeek}&id=${classData.id}&notes=${classData.notes}&weekDay=${classData.weekDay}&period=${classData.period}`;
+				uni.navigateTo({
+					url: pageUrl
+				});
+				this.closePopup();
+			},
 			// 删除课程
-	// 		deleteClass() {
-	// 			// 后端请求部分注释
-	// 			/*
-	// 			uni.request({
-	// 				url: 'http://localhost:3000/deleteClass', // 后端接口地址
-	// 				method: 'POST',
-	// 				data: {
-	// 					userId: this.userId,
-	// 					id: this.popupData.id, // 课程数据以id为主码
-	// 				},
-	// 				success: (res) => {
-	// 					if (res.data.code === 200) {
-	// 						this.classData = this.classData.filter(
-	// 							(item) => item.id !== this.popupData.id
-	// 						); // 更新本地数据
-	// 						this.showPopup = false; // 关闭弹窗
-	// 					} else {
-	// 						console.error('删除失败:', res.data.message || '未知错误');
-	// 					}
-	// 				},
-	// 				fail: (err) => {
-	// 					console.error('请求失败:', err);
-	// 				}
-	// 			});
-	// 			*/
-	// 			// 模拟删除后更新页面
-	// 			this.classData = this.classData.filter(
-	// 				(item) => item.id !== this.popupData.id
-	// 			);
-	// 			this.showPopup = false; // 关闭弹窗
-	// 		}
-	// 	},
-	// };
+			deleteClass() {
+				// 后端请求部分注释	
+				uni.request({
+					url: 'http://localhost:3000/timetable/deleteClass', // 后端接口地址
+					method: 'DELETE',
+					data: {
+						userId: this.userId,
+						id: this.popupData.id, // 课程数据以id为主码
+					},
+					success: (res) => {
+						if (res.data.code === 200) {
+							this.loadClassData();
+							this.showPopup = false; // 关闭弹窗
+							// 刷新页面
+							uni.reLaunch({
+								url: '/pages/study/timetable' // 替换为你的当前页面路径
+							});
+						} else {
+							console.error('删除失败:', res.data.message || '未知错误');
+						}
+					},
+					fail: (err) => {
+						console.error('请求失败:', err);
+					}
+				});
+			}
+		},
+	};
+</script>
 
 <style scoped>
 	.schedule {
