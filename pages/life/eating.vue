@@ -143,10 +143,16 @@ export default {
 	  const plan = this.plans[this.itemIndex];
 	  if (this.itemToDelete === 'plan') {
 	    this.plans.splice(this.itemIndex, 1);  // 删除计划项
-		this.deletePlanFromServer(plan);	
+		this.deletePlanFromServer(plan);
+		uni.navigateTo({
+			url: '/pages/life/eating'
+		});
 	  } else if (this.itemToDelete === 'record') {
 	    this.records.splice(this.itemIndex, 1);  // 删除记录项
 		this.deleteRecordFromServer(record);	
+		uni.navigateTo({
+			url: '/pages/life/eating'
+		});
 	  }
 	  this.cancelDelete();  // 关闭弹窗
 	},
@@ -306,6 +312,7 @@ export default {
 					console.error('请求失败:', err);
 				}
 			});
+			this.fetchPlans();
 		},
 	toggleComplete(index) {
 	  this.plans[index].completed = !this.plans[index].completed;
