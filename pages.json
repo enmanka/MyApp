@@ -110,6 +110,12 @@
 	  }
 	},
 	{
+	  "path": "pages/study/addRemember",
+	  "style": {
+	    "navigationBarTitleText": "添加备忘录"
+	  }
+	},
+	{
 	  "path": "pages/study/notes",
 	  "style": {
 	    "navigationBarTitleText": "课堂笔记"
