@@ -14,36 +14,29 @@
 		<!-- 联系人列表 -->
 		<div v-for="(contactsGroup, letter) in groupedContacts" :key="letter" class="contacts-group">
 			<div class="group-header">{{ letter }}</div>
-			<div v-for="contact in contactsGroup" :key="contact.id" class="contact-item"
-				@click="navigateToContactDetails(contact.id)">
+			<div v-for="contact in contactsGroup" :key="contact.contact_id" class="contact-item"
+				@click="navigateToContactDetails(contact.contact_id,contact.name)">
 				<p>{{ contact.name }}</p>
 				<p>{{ contact.phone }}</p>
+
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
+	// 引入pinyin库
+    //import pinyin from 'pinyin';
 	export default {
 		data() {
 			return {
 				searchQuery: '', // 搜索框的内容
 				selectedIcon: '', // 当前选中的图标
 				
-				//contacts: [], // 初始化为空数组，后续从后端获取
-				//用于查看样式的代码，链接后端接口后需注释掉
-				contacts: [
-				        { id: 1, name: 'Alice', phone: '123-456-7890' },
-				        { id: 2, name: 'Bob', phone: '234-567-8901' },
-				        { id: 3, name: 'Charlie', phone: '345-678-9012' },
-				        { id: 4, name: 'David', phone: '456-789-0123' },
-				        { id: 5, name: 'Eva', phone: '567-890-1234' },
-				        { id: 6, name: 'Frank', phone: '678-901-2345' },
-				        { id: 7, name: 'George', phone: '789-012-3456' },
-				      ],
+				contacts: [], // 初始化为空数组，后续从后端获取				
 					  
 				filteredContacts: [], // 存储过滤后的联系人
-				userID: '', // 假设 userID 可以通过某种方式获取，初始化为空
+				userID:getApp().globalData.userId, 
 			};
 		},
 		computed: {
@@ -52,6 +45,7 @@
 				let filtered = this.filteredContacts.length ? this.filteredContacts : this.contacts;
 				const groups = filtered.reduce((groups, contact) => {
 					const letter = contact.name.charAt(0).toUpperCase();
+					//const letter = getInitialLetter(contact.name);
 					if (!groups[letter]) {
 						groups[letter] = [];
 					}
@@ -65,7 +59,28 @@
 				}, {});
 			},
 		},
+		// 辅助函数，用于获取中文字符串的拼音首字母
+		// getInitialLetter(name) {		  
+		
+		//   // 如果是英文字符，直接返回大写形式
+		//   if (/^[A-Za-z]+$/.test(name)) {
+		//     return name.toUpperCase();
+		//   }
+		  
+		//   const pinyinResult = pinyin(name, {
+		//       style: pinyin.STYLE_FIRST_LETTER  // 获取拼音首字母
+		//     });
+		//   return pinyinResult[0][0].toUpperCase();  // 返回大写首字母
+		  
+		// },
+		created() {
+		  this.userId = getApp().globalData.userId;
+		
+		  // 页面加载时根据日期和用户ID获取当前账单条目
+		  this.fetchContacts();
+		},
 		methods: {
+			
 			// 搜索过滤联系人
 			filterContacts() {
 				if (this.searchQuery.trim() === '') {
@@ -85,39 +100,39 @@
 				}
 			},
 			// 跳转到联系人详情页
-			navigateToContactDetails(contactId) {
+			navigateToContactDetails(contactId,name) {	
 				uni.navigateTo({
-					url: `/pages/life/contacts/showContact?id=${contactId}`
+					url: `/pages/life/contacts/showContact?id=${contactId}&name=${name}`
 				});
 			},
-			//与后端连接的部分
-			// 获取联系人数据
-			// async fetchContacts() {
-			// 	try {
-			// 		// 发送请求传递 userID，并从后端获取联系人数据
-			// 		const response = await uni.request({
-			// 			url: `https://your-api.com/api/contacts`, // 替换为实际后端接口
-			// 			method: 'GET',
-			// 			data: {
-			// 				userID: this.userID
-			// 			}, // 传递 userID
-			// 		});
-
-			// 		if (response.statusCode === 200) {
-			// 			this.contacts = response.data.contacts; // 假设后端返回的数据格式包含 contacts 数组
-			// 			this.filteredContacts = this.contacts; // 初始化时填充联系人列表
-			// 		} else {
-			// 			console.error('Failed to fetch contacts:', response);
-			// 		}
-			// 	} catch (error) {
-			// 		console.error('Error fetching contacts:', error);
-			// 	}
-			// },
+			
+			// 获取联系人信息
+			fetchContacts() {
+			  uni.request({
+			      url: `http://127.0.0.1:3000/contact/getAllContacts`, // 替换为实际API接口
+			      method: 'POST',
+				  data: {
+				    user_id: this.userId,
+				  },
+			     // header: {
+			     //     'content-type': 'application/json' // 确保设置了正确的Content-Type
+			     //   },
+			    success: (res) =>{if (res.data.code === 200) {   
+					this.contacts=res.data.result;
+			     } else {
+			      console.error('获取联系人信息失败:', res);
+				  uni.showToast({ title: '获取联系人信息失败', icon: 'none' });
+			     }
+				},
+			  fail: (err) => {
+			    console.error('请求失败:', err);
+				uni.showToast({ title: '请求失败', icon: 'none' });
+			  },
+			  });
+			},
 		},
-		mounted() {
-			// 调用 fetchContacts 从后端获取联系人数据
-			//this.fetchContacts();
-		},
+		
+		
 	};
 </script>
 

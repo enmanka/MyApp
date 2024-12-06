@@ -20,10 +20,10 @@
         <input type="text" v-model="contact.occupation" placeholder="请输入职业" />
       </div>
 
-      <div class="form-group">
+      <!-- <div class="form-group">
         <label>年龄</label>
         <input type="number" v-model="contact.age" placeholder="请输入年龄" min="0" />
-      </div>
+      </div> -->
 
       <div class="form-group">
         <label>电话</label>
@@ -41,8 +41,8 @@
       </div>
 
       <div class="form-group">
-        <label>居住地址</label>
-        <input type="text" v-model="contact.address" placeholder="请输入居住地址" />
+        <label>群组</label>
+        <input type="text" v-model="contact.group" placeholder="请输入组别" />
       </div>
 
       <div class="form-group">
@@ -50,7 +50,7 @@
         <textarea v-model="contact.notes" placeholder="请输入备注"></textarea>
       </div>
 
-      <button type="submit" class="submit-button">保存联系人</button>
+      <button type="submit" class="submit-button" @click="this.submitForm()">保存联系人</button>
     </form>
   </div>
 </template>
@@ -63,45 +63,68 @@ export default {
         name: '',
         gender: '',
         occupation: '',
-        age: null,
+        //age: null,
         phone: '',
         qq: '',
         email: '',
-        address: '',
+        group: '',
         notes: '',
       },
-      userID: '', // 假设从本地存储或其他方式获取当前用户的ID
+      userID:getApp().globalData.userId, // 假设从本地存储或其他方式获取当前用户的ID
     };
+  },
+  onBackPress() {
+  	// 在这里实现返回按钮点击后的逻辑
+  	uni.redirectTo({
+  		url: '/pages/life/contacts/contacts' // 替换为你指定的目标页面路径
+  	});
+  	return true; // 阻止默认的返回操作
   },
   methods: {
     // 提交表单并通过API将联系人数据发送到后端
-    async submitForm() {
-      try {
-        // 这里的 API 地址根据后端实际接口进行修改
-        const response = await uni.request({
-          url: 'https://your-api.com/api/contacts', // 替换为实际API接口
-          method: 'POST',
-          data: {
-            userID: this.userID, // 用户ID，假设从本地存储或登录信息中获取
-            contact: this.contact, // 提交的联系人数据
-          },
-        });
-
-        // 后端响应成功时的处理
-        if (response.statusCode === 200) {
-          console.log('联系人保存成功:', response.data);
-          // 可以在保存成功后跳转到联系人列表或显示成功提示
-          uni.showToast({ title: '联系人保存成功', icon: 'success' });
-          uni.navigateBack(); // 返回上一级页面
-        } else {
-          console.error('保存联系人失败:', response);
-          uni.showToast({ title: '保存失败', icon: 'none' });
-        }
-      } catch (error) {
-        console.error('请求失败:', error);
-        uni.showToast({ title: '请求失败，请稍后重试', icon: 'none' });
-      }
-    },
+	submitForm() {
+		//检查姓名是否为空
+		if (!this.contact.name.trim()||!this.contact.phone.trim()) { 
+		    uni.showToast({ title: '姓名电话不能为空', icon: 'none' });
+		    return; // 阻止表单提交
+		}
+		uni.request({
+			
+			url: 'http://127.0.0.1:3000/contact/addContact',
+			method: 'POST',
+			data: {
+				user_id: this.userID, // 用户ID，
+				//contact: this.contact, // 提交的联系人数据
+				name:this.contact.name,
+				gender:this.contact.gender,
+				job:this.contact.occupation,
+				//age: null,
+				phone:this.contact.phone,
+				QQnum:this.contact.qq,
+				email:this.contact.email,
+				grp:this.contact.group,
+				//address: '',
+				remark:this.contact.notes,
+			},
+		success: (res) => {
+			if (res.data.code === 200) {
+				uni.showToast({ title: '联系人保存成功', icon: 'success' });
+				         setTimeout(() => {				          	
+				          	uni.navigateTo({
+				          		url: '/pages/life/contacts/contacts'
+				          	});
+				          }, 1000);
+			} else {
+				console.error('添加联系人失败:', res.data.message || '未知错误');
+				uni.showToast({ title: '保存失败', icon: 'none' });
+			}
+		},
+		fail: (err) => {
+			console.error('请求失败:', err);
+			uni.showToast({ title: '请求失败，请稍后重试', icon: 'none' });
+		}
+	});
+	}, 
   },
 };
 </script>
