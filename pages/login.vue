@@ -2,7 +2,7 @@
 	<view class="container">
 		<view class="top">
 			<image src="../static/login/login.png" mode="widthFix" style="width: 100%;"></image>
-			<text class="title">助学系统</text>
+			<text class="title">智慧伴学助手</text>
 		</view>
 		<view class="box">
 			<view class="main">
@@ -23,7 +23,13 @@
 				<view class="box3" v-show="navId=='login'">
 					<view class="items">
 						<uni-icons type="person" size="20" style="margin-right:16rpx ;color: #C7D4DD;"></uni-icons>
-						<input class="uni-input" focus placeholder="请输入电话号码" v-model="submitParams.username" />
+						<input class="uni-input" focus placeholder="请输入用户名" v-model="submitParams.username" />
+					</view>
+					<view class="items" style="margin-top: 30rpx;justify-content: space-between;">
+					<view class="items">
+						<uni-icons type="person" size="20" style="margin-right:16rpx ;color: #C7D4DD;"></uni-icons>
+						<input class="uni-input" focus placeholder="请输入邮箱" v-model="submitParams.email" />
+					</view>
 					</view>
 					<view class="items" style="margin-top: 30rpx;justify-content: space-between;">
 						<view class="" style="display: flex;justify-content: center;">
@@ -49,8 +55,15 @@
 				<view class="box3" v-show="navId=='register'">
 					<view class="items">
 						<uni-icons type="person" size="20" style="margin-right:16rpx ;color: #C7D4DD;"></uni-icons>
-						<input class="uni-input" placeholder="请输入电话号码" v-model="registerParams.username"
-							@input="checkPhone" />
+						<input class="uni-input" placeholder="请输入用户名" v-model="registerParams.username"
+						 @input="checkName" />
+					</view>
+					<view class="items" style="margin-top: 30rpx;justify-content: space-between;">
+					<view class="items">
+						<uni-icons type="person" size="20" style="margin-right:16rpx ;color: #C7D4DD;"></uni-icons>
+						<input class="uni-input" placeholder="请输入邮箱" v-model="this.registerParams.email"
+							@input="checkEmail" />
+					</view>
 					</view>
 					<view class="items" style="margin-top: 30rpx;justify-content: space-between;">
 						<view class="" style="display: flex;justify-content: center;">
@@ -72,7 +85,7 @@
 						<view class="" style="display: flex;justify-content: center;">
 							<image src="../static/login/lock.png" mode="widthFix"
 								style="width: 40rpx;margin-right:16rpx ;"></image>
-							<input class="uni-input input2" placeholder="请输入短信验证码" v-model="registerParams.smsCode"
+							<input class="uni-input input2" placeholder="请输入邮箱验证码" v-model="registerParams.emailCode"
 								:disabled="!canInputYZM" />
 						</view>
 						<view class="yzm" @click="getYZM(yanzhengma)" :class="{ disabled: !canGetYZM }">{{yanzhengma}}
@@ -130,14 +143,16 @@
 				navId: 'login',
 				yanzhengma: '获取验证码',
 				submitParams: {
-					username: "", // 登录电话号码
+					username: "", // 登录用户名
+					email: "", // 登录邮箱
 					password: "" // 登录密码
 				},
 				registerParams: {
-					username: "", // 注册电话号码
+					username: "", // 注册用户名
+					email: "", // 注册邮箱
 					password: "", // 注册密码
 					confirmPassword: "", // 确认密码
-					smsCode: "" // 短信验证码
+					emailCode: "" // 邮箱验证码
 				}
 			};
 		},
@@ -146,35 +161,88 @@
 			itemclick(value) {
 				this.navId = value;
 			},
-			checkPhone() {
-				this.canGetYZM = this.registerParams.username !== "";
+			checkName() {
+				if(this.registerParams.username === ""){
+					uni.showToast({
+						title: '用户名不能为空！',
+						icon: 'none',
+						duration: 2000
+					});
+				}
+			},
+			checkEmail() {
+				if(this.registerParams.email === ""){
+					uni.showToast({
+						title: '邮箱不能为空！',
+						icon: 'none',
+						duration: 2000
+					});
+				}else if(this.registerParams.username !== ""){
+					this.canGetYZM = true;
+				}
 			},
 			// 获取验证码
-			// getYZM() {
-			// 	if (this.canGetYZM) {
-			// 		this.canInputYZM = true;
-			// 		// 调用获取验证码的接口
-			// 		if (this.yanzhengma === '获取验证码') {
-			// 			let time = 60;
-			// 			let timer = setInterval(() => {
-			// 				this.yanzhengma = `( ${time--} )`
-			// 				if (time === -1) {
-			// 					clearInterval(timer);
-			// 					this.yanzhengma = '获取验证码';
-			// 				}
-			// 			}, 1000);
-			// 		}
-			// 		console.log(this.registerParams.username);
-			// 	}
-			// },
+			getYZM() {
+			    if (this.canGetYZM) {
+			        // 禁用验证码按钮
+			        this.canInputYZM = true;
+			
+			        // 向后端发送请求，发送验证码
+			        uni.request({
+			            url: 'http://localhost:3000/userLogin/getCaptcha',  // 后端接口地址
+			            method: 'POST',
+			            data: {
+			                email: this.registerParams.email  // 发送邮箱地址
+			            },
+			            success: (res) => {
+			                if (res.data.code === 200) { // 假设后端返回的状态码是200表示成功
+			                    // 开始倒计时，防止用户频繁请求验证码
+			                    let time = 60;
+			                    let timer = setInterval(() => {
+			                        this.yanzhengma = `( ${time--} )`; // 更新验证码按钮文本
+			                        if (time === -1) {
+			                            clearInterval(timer);
+			                            this.yanzhengma = '获取验证码';  // 倒计时结束后恢复原文案
+			                            this.canInputYZM = false;  // 恢复验证码按钮可点击状态
+			                        }
+			                    }, 1000);
+			                } else if (res.data.code === 409) { // 检查返回的状态码是否是409
+			                    uni.showToast({
+			                        title: '邮箱已被注册',
+			                        icon: 'none',
+			                        duration: 2000
+			                    });
+			                    this.canInputYZM = false;  // 恢复验证码按钮可点击状态
+			                } else {
+			                    uni.showToast({
+			                        title: res.data.message || '验证码发送失败',
+			                        icon: 'none',
+			                        duration: 2000
+			                    });
+			                    this.canInputYZM = false;  // 验证码发送失败时恢复按钮状态
+			                }
+			            },
+			            fail: () => {
+			                uni.showToast({
+			                    title: '网络错误，验证码发送失败',
+			                    icon: 'none',
+			                    duration: 2000
+			                });
+			                this.canInputYZM = false;  // 网络错误时恢复按钮状态
+			            }
+			        });
+			    }
+			},
+
 
 			// 登录逻辑
 			login() {
 				const {
 					username,
+					email,
 					password
 				} = this.submitParams;
-				if (username === '' || password === '') {
+				if (username === '' || email === '' || password === '') {
 					uni.showToast({
 						title: '请输入完整信息',
 						icon: 'none',
@@ -187,7 +255,8 @@
 					url: 'http://localhost:3000/userLogin/login', // 后端登录接口地址
 					method: 'POST',
 					data: {
-						username: username, // 传递电话号码
+						username: username, // 传递用户名
+						email: email, // 传递邮箱
 						password: password // 传递密码
 					},
 
@@ -228,12 +297,13 @@
 			register() {
 				const {
 					username,
+					email,
 					password,
 					confirmPassword,
-					smsCode
+					emailCode
 				} = this.registerParams;
 
-				if (username === '' || password === '') {
+				if (username === '' || email === '' || password === '') {
 					uni.showToast({
 						title: '请输入完整信息',
 						icon: 'none',
@@ -254,8 +324,9 @@
 					method: 'POST',
 					data: {
 						username: username, // 传递电话号码
+						email: email, // 传递邮箱
 						password: password, // 传递密码
-						//smsCode: smsCode // 传递短信验证码
+						emailCode: emailCode // 传递前端输入的验证码
 					},
 					success: (res) => {
 						if (res.data.code === 200) { // 假设后端返回的状态码是200表示成功
@@ -273,7 +344,13 @@
 							uni.navigateTo({
 								url: '/pages/life/index'
 							});
-						} else {
+						} else if(res.data.code === 403){
+							uni.showToast({
+								title: res.data.message || '验证码不正确',
+								icon: 'none',
+								duration: 2000
+							});
+						}else {
 							uni.showToast({
 								title: res.data.message || '注册失败',
 								icon: 'none',
@@ -310,6 +387,7 @@
 		}
 	}
 </script>
+
 <style lang="scss">
 	.container {
 		font-family: PingFangSC, PingFang SC;
