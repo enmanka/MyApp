@@ -25,7 +25,7 @@
           class="note-name" 
           @click="viewNoteDetail(note)"
         >
-          {{ note.name }}
+          {{ note.note_title }}
         </span>
       
         <!-- 删除按钮 -->
@@ -34,10 +34,9 @@
           size="20" 
           color="#FF4F4F" 
           class="delete-icon" 
-          @click.stop="confirmDelete(note, index)" 
+          @click="showDeletePopup(note)" 
         />
       </div>
-
 
     </div>
 
@@ -46,17 +45,17 @@
       <uni-icons type="folder-add" size="50" color="#fff" class="add-icon" @click="addNote" />
     </div>
     
-    <!-- 删除确认弹框 -->
-    <uni-popup ref="deletePopup" type="dialog" class="delete-popup">
-      <div class="popup-content">
-        <h3>确认删除</h3>
-        <p>您确定要删除这个笔记吗？</p>
-        <div class="popup-buttons">
-          <button @click="deleteNote" class="confirm-btn">确认</button>
-          <button @click="cancelDelete" class="cancel-btn">取消</button>
+    
+    <!-- 遮罩层 -->
+        <div v-if="showPopup" class="popup-overlay" @click="cancelDelete()"></div>
+    <!-- 删除确认弹窗 -->
+        <div v-if="showPopup" class="popup delete-popup">
+          <p>确认删除此项吗？</p>
+          <div class="popup-actions">
+            <button @click="confirmDelete()" class="confirm-btn">确认</button>
+            <button @click="cancelDelete()" class="cancel-btn">取消</button>
+          </div>
         </div>
-      </div>
-    </uni-popup>
   </div>
 </template>
 
@@ -71,29 +70,28 @@ export default {
   },
   data() {
     return {
-      searchQuery: '', // 搜索框的内容
-	  //notes: [], // 笔记列表（从后端获取）
-	  //连接后端后注释掉下面内容note:[...]
-      notes: [
-        { id:1,name: '数学笔记' },
-        { id:2,name: '物理笔记' },
-        { id:3,name: '编程笔记' },
-        { id:4,name: '英语笔记' },
-      ],
-	  
-      showDeletePopup: false, // 控制删除确认弹框的显示
+      searchQuery: '', // 搜索框的内容	  
+      notes: [],	  
+      showPopup: false, // 控制删除确认弹框的显示
       noteToDelete: null, // 要删除的笔记
       deleteIndex: null, // 要删除笔记的索引
-	  //userID:null  // 当前用户的 ID（假设已通过登录获取）
+	  userID:getApp().globalData.userId,  // 当前用户的 ID
     };
   },
+	  
+  
   computed: {
     // 根据搜索框的输入内容过滤笔记
     filteredNotes() {
       return this.notes.filter(note =>
-        note.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+        note.note_title.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
     },
+  },
+  created(){
+  	  this.userId = getApp().globalData.userId;
+  	  //页面加载时获取笔记列表
+  	  this.fetchNotes();
   },
   methods: {
     // 跳转到添加笔记页面
@@ -105,119 +103,75 @@ export default {
     // 查看笔记详情
     viewNoteDetail(note) {
       uni.navigateTo({
-        url: `/pages/study/noteDetail?name=${note.name}&id=${note.id}`, // 跳转到笔记详情页
+        url: `/pages/study/noteDetail?title=${note.note_title}&id=${note.note_id}`, // 跳转到笔记详情页
       });
     },
-    // 显示删除确认弹框
-   
-    confirmDelete(note, index, event) {
-          // 显式阻止冒泡
-          event.stopPropagation();
-          this.noteToDelete = note;
-          this.deleteIndex = index;
-          this.$refs.deletePopup.open();
-        },
+    // 显示删除弹窗
+    showDeletePopup(note) { 
+	  this.noteToDelete = note;
+      this.showPopup = true;         // 显示弹窗
+	  uni.showToast({title: this.showDeletePopup,icon: 'none',});
+    },
+   // 取消删除操作
+   cancelDelete() {
+     this.showPopup = false;   // 隐藏弹窗
+   },
+   // 确认删除操作
+   confirmDelete() {
+   	this.cancelDelete();  // 关闭弹窗 	
+    this.deleteNote(this.noteToDelete.note_id);
+   }, 
+    
 	// 初始化时从后端获取所有笔记
-	    // fetchNotes() {
-	    //   // 发送请求到后端获取当前用户的笔记列表
-	    //   uni.request({
-	    //     url: `/api/notes`, // 假设后端获取笔记的接口为 /api/notes
-	    //     method: 'GET',
-	    //     data: { userId: this.userId }, // 传入用户 ID
-	    //     success: (res) => {
-	    //       if (res.statusCode === 200 && res.data.notes) {
-	    //         this.notes = res.data.notes; // 更新本地笔记列表
-	    //       } else {
-	    //         uni.showToast({
-	    //           title: '获取笔记失败',
-	    //           icon: 'none',
-	    //         });
-	    //       }
-	    //     },
-	    //     fail: (err) => {
-	    //       console.error('获取笔记失败', err);
-	    //       uni.showToast({
-	    //         title: '网络异常',
-	    //         icon: 'none',
-	    //       });
-	    //     },
-	    //   });
-	    // },
-	// 实时搜索笔记（后端联动）
-	    searchNotes() {
-	      // 搜索时调用后端接口
-	      uni.request({
-	        url: `/api/notes/search`, // 假设搜索接口路径为 /api/notes/search
+	fetchNotes() {
+	    // 发送请求到后端获取当前用户的笔记列表
+	    uni.request({
+	        url: `http://localhost:3000/notetake/getAllNotes`, // 后端获取笔记的接口
 	        method: 'POST',
-	        data: {
-	          userId: this.userId, // 当前用户 ID
-	          keyword: this.searchQuery, // 搜索关键字
-	        },
+	        data: { user_id: this.userId,}, // 传入用户 ID
 	        success: (res) => {
-	          if (res.statusCode === 200 && res.data.notes) {
-	            this.notes = res.data.notes; // 更新笔记列表为搜索结果
+	          if (res.data.code === 200 && res.data.result) {
+	            this.notes = res.data.result; // 更新本地笔记列表
 	          } else {
-	            uni.showToast({
-	              title: '未找到相关笔记',
-	              icon: 'none',
-	            });
+	            uni.showToast({title: '获取笔记失败',icon: 'none',});
 	          }
 	        },
 	        fail: (err) => {
-	          console.error('搜索笔记失败', err);
-	          uni.showToast({
-	            title: '搜索失败',
-	            icon: 'none',
-	          });
+	          console.error('获取笔记失败', err);
+	          uni.showToast({title: '网络异常',icon: 'none',});
 	        },
-	      });
-	    },
+	    });
+	},
+	
     // 删除笔记
-    deleteNote() {
-      if (this.noteToDelete) {
-        // 调用后端接口删除笔记
-        // uni.request({
-        //   url: `/api/notes/${this.noteToDelete.id}`, // 假设后端删除笔记的接口为 `/api/notes/:id`
-        //   method: 'DELETE',
-        //   success: (res) => {
-        //     if (res.statusCode === 200) {
-        //       // 从本地 notes 数组中移除笔记
-        //       this.notes.splice(this.deleteIndex, 1);
-        //       this.$refs.deletePopup.close(); // 关闭弹框
-        //       uni.showToast({
-        //         title: '笔记删除成功',
-        //         icon: 'success',
-        //       });
-        //     } else {
-        //       uni.showToast({
-        //         title: '删除失败，请重试',
-        //         icon: 'none',
-        //       });
-        //     }
-        //   },
-        //   fail: (err) => {
-        //     console.error('删除笔记失败', err);
-        //     uni.showToast({
-        //       title: '删除失败，请检查网络',
-        //       icon: 'none',
-        //     });
-        //   },
-        // });
-      }
+    deleteNote(id) {
+        //调用后端接口删除笔记
+        uni.request({
+          url: `http://localhost:3000/notetake/deleteRecord`, // 后端删除笔记的接口
+          method: 'DELETE',
+		  data: {note_id:id,},
+          success: (res) => {
+            if (res.statusCode === 200) {
+              // 移除笔记              
+              uni.showToast({title: '笔记删除成功',icon: 'success',});
+			  this.fetchNotes();
+            } else {
+              uni.showToast({title: '删除失败，请重试',icon: 'none',});
+            }
+          },
+          fail: (err) => {
+            console.error('删除笔记失败', err);
+            uni.showToast({
+              title: '删除失败，请检查网络',
+              icon: 'none',
+            });
+          },
+        });
+      
     },
 
-    // 取消删除
-    cancelDelete() {
-      this.$refs.deletePopup.close(); // 关闭弹框
-    },
   },
-  //连接后端后开启下面注释内容·
-  // 从本地存储获取 userId
-    // const userId = uni.getStorageSync('userId');
-    // if (userId) {
-    //   this.userId = userId; // 将 userId 绑定到组件数据中
-    //   this.fetchNotes();    // 调用获取笔记的方法
-    // } 
+  
 };
 </script>
 
@@ -311,11 +265,11 @@ export default {
 }
 
 
-/* 删除弹框样式 */
+/* 删除弹框样式 
 .delete-popup .popup-content {
   padding: 20px;
   text-align: center;
-}
+} */ 
 
 .popup-buttons {
   display: flex;
@@ -323,32 +277,70 @@ export default {
   margin-top: 20px;
 }
 
-.confirm-btn, .cancel-btn {
-  padding: 10px 20px;
-  border-radius: 5px;
+/* 遮罩层 */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);  /* 半透明黑色遮罩 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+/* 删除确认弹窗样式*/
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+  background-color: #ccc; /* 灰色背景 */
+  color: white;
+  font-size: 18px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  text-align: center;
+}
+
+.popup-actions {
+   margin-top: 20px;
+   display: flex;
+   justify-content: center;
+}
+
+.popup-actions button {
+  padding: 5px 10px;
+  margin: 0 10px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
 .confirm-btn {
-  background-color: #FF4F4F;
+  background-color: #4caf50; /* 确认按钮绿色 */
   color: white;
-  border: none;
 }
 
 .confirm-btn:hover {
-  background-color: #e03e3e; /* 确认按钮悬停 */
+  background-color: #45a049;
 }
 
 .cancel-btn {
-  
-  background-color: #ccc;
-  color: white;
-  border: none;
+  background-color: #f1f1f1; /* 取消按钮灰色 */
+  color: #333;
 }
 
 .cancel-btn:hover {
-  background-color: #b0b0b0; /* 取消按钮悬停 */
-  transform: scale(1.2); /* 悬停时稍微放大按钮 */
+  background-color: #e0e0e0;
+}
+
+.delete-icon {
+  color: red;
+  cursor: pointer;
 }
 </style>
