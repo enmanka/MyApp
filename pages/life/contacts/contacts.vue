@@ -26,7 +26,7 @@
 
 <script>
 	// 引入pinyin库
-    //import pinyin from 'pinyin';
+    import pinyin from 'pinyin';
 	export default {
 		data() {
 			return {
@@ -40,19 +40,19 @@
 			};
 		},
 		onBackPress() {
-  			// 在这里实现返回按钮点击后的逻辑
-  			uni.redirectTo({
-  			url: '/pages/life/index' // 替换为你指定的目标页面路径
-  				});
-  			return true; // 阻止默认的返回操作
-  		},
+			// 在这里实现返回按钮点击后的逻辑
+			uni.redirectTo({
+				url: '/pages/life/index' // 替换为你指定的目标页面路径
+			});
+			return true; // 阻止默认的返回操作
+		},
 		computed: {
 			// 根据搜索过滤联系人列表
 			groupedContacts() {
 				let filtered = this.filteredContacts.length ? this.filteredContacts : this.contacts;
 				const groups = filtered.reduce((groups, contact) => {
-					const letter = contact.name.charAt(0).toUpperCase();
-					//const letter = getInitialLetter(contact.name);
+					//const letter = contact.name.charAt(0).toUpperCase();
+					const letter = this.getInitialLetter(contact.name);
 					if (!groups[letter]) {
 						groups[letter] = [];
 					}
@@ -66,20 +66,7 @@
 				}, {});
 			},
 		},
-		// 辅助函数，用于获取中文字符串的拼音首字母
-		// getInitialLetter(name) {		  
 		
-		//   // 如果是英文字符，直接返回大写形式
-		//   if (/^[A-Za-z]+$/.test(name)) {
-		//     return name.toUpperCase();
-		//   }
-		  
-		//   const pinyinResult = pinyin(name, {
-		//       style: pinyin.STYLE_FIRST_LETTER  // 获取拼音首字母
-		//     });
-		//   return pinyinResult[0][0].toUpperCase();  // 返回大写首字母
-		  
-		// },
 		created() {
 		  this.userId = getApp().globalData.userId;
 		
@@ -87,6 +74,20 @@
 		  this.fetchContacts();
 		},
 		methods: {
+			// 辅助函数，用于获取中文字符串的拼音首字母
+			getInitialLetter(name) {		  
+			
+			  // 如果是英文字符，直接返回大写形式
+			  if (/^[A-Za-z]+$/.test(name)) {
+			    return name.charAt(0).toUpperCase();
+			  }
+			  
+			  const pinyinResult = pinyin(name, {
+			      style: pinyin.STYLE_FIRST_LETTER  // 获取拼音首字母
+			    });
+			  return pinyinResult[0][0].toUpperCase();  // 返回大写首字母
+			  
+			},
 			
 			// 搜索过滤联系人
 			filterContacts() {
