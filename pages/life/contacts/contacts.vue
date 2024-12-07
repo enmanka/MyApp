@@ -39,6 +39,13 @@
 				userID:getApp().globalData.userId, 
 			};
 		},
+		onBackPress() {
+  			// 在这里实现返回按钮点击后的逻辑
+  			uni.redirectTo({
+  			url: '/pages/life/index' // 替换为你指定的目标页面路径
+  				});
+  			return true; // 阻止默认的返回操作
+  		},
 		computed: {
 			// 根据搜索过滤联系人列表
 			groupedContacts() {
