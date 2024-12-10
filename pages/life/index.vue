@@ -63,21 +63,54 @@
 	          url: pageMap[page],
 	        });
 	      },
-	      async getWeather() {
-	        try {
-	          const response = await fetch('http://47.108.162.90:3000/weather/city?city=Chengdu');
-	          const data = await response.json();
+	//       async getWeather() {
+	//         try {
+	//           const response = await fetch('http://47.108.162.90:3000/weather/city?city=Chengdu');
+	//           const data = await response.json();
 	
-	          if (data.success) {
-	            this.weatherData = data.data;
-	          } else {
-	            this.errorMessage = '获取天气失败: ' + data.message;
-	          }
-	        } catch (error) {
-	          console.error('请求错误:', error);
-	          this.errorMessage = '请求错误: ' + error.message;
-	        }
-	      },
+	//           if (data.success) {
+	//             this.weatherData = data.data;
+	//           } else {
+	//             this.errorMessage = '获取天气失败: ' + data.message;
+	//           }
+	//         } catch (error) {
+	//           console.error('请求错误:', error);
+	//           this.errorMessage = '请求错误: ' + error.message;
+	//         }
+	//       },
+	getWeather() {
+	  // 使用 uni.request 发送 HTTP 请求
+	  uni.request({
+	    url: 'http://47.108.162.90:3000/weather/city?city=Chengdu', // 后端接口
+	    method: 'GET',
+	    success: (res) => {
+	      // 判断返回的数据是否成功
+	      if (res.data.success) {
+	        this.weatherData = res.data.data; // 处理获取到的天气数据
+	      } else {
+	        this.errorMessage = '获取天气失败: ' + res.data.message; // 错误信息
+	      }
+	    },
+	    fail: (error) => {
+	      // 请求失败时的处理
+	      console.error('请求错误:', error);
+	      this.errorMessage = '请求错误: ' + error.errMsg; // 请求失败错误信息
+	    }
+	  });
+	},
+	updateIcon(icon) {
+	  this.selectedIcon = icon;
+	  uni.setStorageSync('selectedIcon', icon);
+	},
+	mounted() {
+	  // this.selectedIcon = uni.getStorageSync('selectedIcon') || 'life';
+	  this.getWeather(); // 可选：在组件加载时请求天气
+	},
+	onShow() {
+	  this.selectedIcon = 'life';
+	  uni.setStorageSync('selectedIcon', 'life');
+	},
+
 	      updateIcon(icon) {
 	        this.selectedIcon = icon;
 	        uni.setStorageSync('selectedIcon', icon);
