@@ -34,7 +34,7 @@
         		              @click="increaseCurrentQuantity(index)" 
         		              class="increase-icon"
         		            />
-        		<span class="plan-food"> -- 剩余额度：{{ plan.quantityRemaining }}份</span>
+        		<span class="plan-food"> -- 余额：{{ plan.quantityRemaining }}份</span>
         		<!-- <div class="plan-end-date">{{ plan.endDate }}</div> -->
               </div>
               <uni-icons type="closeempty" size="20" class="delete-icon" @click="showDeletePopup('plan', index)" />
