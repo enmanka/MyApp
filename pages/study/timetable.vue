@@ -136,9 +136,11 @@
 			// 获取指定单元格的课程数据
 			getClassData(rowIndex, day) {
 				const weekDayIndex = this.days.indexOf(day); // 获取 day 的索引
+				//console.log(JSON.parse(JSON.stringify(this.classData))); // 序列化后可以取值
 				const classInfo = this.classData.find(
-					(item) => item.weekDay === weekDayIndex && item.period === rowIndex + 1
+					(item) => item.weekDay === weekDayIndex && item.period === rowIndex+1
 				);
+				//console.log(classInfo);
 				return classInfo;
 			},
 			// 新增的加载数据函数
@@ -157,7 +159,7 @@
 								id: item.timetable_id, // 课程ID
 								name: item.classname, // 课程名称
 								teacher: item.teacher_name, // 授课老师
-								weekDay: item.weekday, // 上课星期几
+								weekDay: parseInt(item.weekday), // 上课星期几
 								period: parseInt(item.classtime), // 上课节次
 								address: item.location, // 上课地点
 								contact: item.timetable_contact, // 联系方式
@@ -238,7 +240,6 @@
 				});
 				this.closePopup();
 			},
-			// 删除课程
 			deleteClass() {
 				// 后端请求部分注释	
 				uni.request({
