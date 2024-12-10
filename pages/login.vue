@@ -189,7 +189,7 @@
 			
 			        // 向后端发送请求，发送验证码
 			        uni.request({
-			            url: 'http://localhost:3000/userLogin/getCaptcha',  // 后端接口地址
+			            url: 'http://47.108.162.90:3000/userLogin/getCaptcha',  // 后端接口地址
 			            method: 'POST',
 			            data: {
 			                email: this.registerParams.email  // 发送邮箱地址
@@ -252,7 +252,7 @@
 
 				// 调用后端接口
 				uni.request({
-					url: 'http://localhost:3000/userLogin/login', // 后端登录接口地址
+					url: 'http://47.108.162.90:3000/userLogin/login', // 后端登录接口地址
 					method: 'POST',
 					data: {
 						username: username, // 传递用户名
@@ -320,7 +320,7 @@
 				}
 				// 调用后端接口
 				uni.request({
-					url: 'http://localhost:3000/userLogin/register', // 后端注册接口地址
+					url: 'http://47.108.162.90:3000/userLogin/register', // 后端注册接口地址
 					method: 'POST',
 					data: {
 						username: username, // 传递电话号码

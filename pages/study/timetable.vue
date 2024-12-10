@@ -144,7 +144,7 @@
 			// 新增的加载数据函数
 			loadClassData() {
 				uni.request({
-					url: 'http://localhost:3000/timetable/getTimeTable', // 后端接口地址
+					url: 'http://47.108.162.90:3000/timetable/getTimeTable', // 后端接口地址
 					method: 'POST',
 					data: {
 						userId: this.userId, // 当前用户 ID
@@ -242,7 +242,7 @@
 			deleteClass() {
 				// 后端请求部分注释	
 				uni.request({
-					url: 'http://localhost:3000/timetable/deleteClass', // 后端接口地址
+					url: 'http://47.108.162.90:3000/timetable/deleteClass', // 后端接口地址
 					method: 'DELETE',
 					data: {
 						userId: this.userId,

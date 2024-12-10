@@ -172,7 +172,7 @@
 			//初始数据逻辑： 向后端传入userId， 后端据此返回对应的用户头像、 用户昵称、 用户简介
 			// 向后端发送 POST 请求，获取用户数据
 			uni.request({
-				url: 'http://localhost:3000/userCenter/persondata', // 后端接口地址
+				url: 'http://47.108.162.90:3000/userCenter/persondata', // 后端接口地址
 				method: 'POST',
 				data: {
 					userId: this.alldata[0].userId
@@ -214,7 +214,7 @@
 						this.alldata[0].userImg = res.tempFilePaths[0];
 						// 更新头像代码（注释）
 						// uni.uploadFile({
-						// 	url: 'http://localhost:3000/login',
+						// 	url: 'http://47.108.162.90:3000/login',
 						// 	filePath: res.tempFilePaths[0],
 						// 	name: 'avatar',
 						// 	formData: { userId: this.alldata[0].userId},
@@ -241,7 +241,7 @@
 			    this.showNicknameDialog = false;
 			    // 更新昵称到后端代码（注释）
 			    uni.request({
-			        url: 'http://localhost:3000/userCenter/updateNickName',
+			        url: 'http://47.108.162.90:3000/userCenter/updateNickName',
 			        method: 'POST',
 			        data: { userId: this.alldata[0].userId, nickName: this.newNickName },
 			    });
@@ -264,7 +264,7 @@
 			    this.showGenderDialog = false;
 			    // 更新性别到后端代码（注释）
 			    uni.request({
-			        url: 'http://localhost:3000/updateGender',
+			        url: 'http://47.108.162.90:3000/updateGender',
 			        method: 'POST',
 			        data: { userId: this.alldata[0].userId, gender: this.newGender },
 			    });
@@ -287,7 +287,7 @@
 			    this.showAgeDialog = false;
 			    // 更新年龄到后端代码（注释）
 			    uni.request({
-			        url: 'http://localhost:3000/userCenter/updateAge',
+			        url: 'http://47.108.162.90:3000/userCenter/updateAge',
 			        method: 'POST',
 			        data: { userId: this.alldata[0].userId, age: this.newAge },
 			    });
@@ -311,7 +311,7 @@
 			    this.showSchoolDialog = false;
 			    // 更新学校到后端代码（注释）
 			    uni.request({
-			        url: 'http://localhost:3000/userCenter/updateSchool',
+			        url: 'http://47.108.162.90:3000/userCenter/updateSchool',
 			        method: 'POST',
 			        data: { userId: this.alldata[0].userId, school: this.newSchool },
 			    });
@@ -335,7 +335,7 @@
 			    this.showDescDialog = false;
 			    // 更新简介到后端代码（注释）
 			    uni.request({
-			        url: 'http://localhost:3000/userCenter/updateDesc',
+			        url: 'http://47.108.162.90:3000/userCenter/updateDesc',
 			        method: 'POST',
 			        data: { userId:this.alldata[0].userId, desc: this.newDesc },
 			    });
@@ -362,7 +362,7 @@
 				if (this.newPassword === this.confirmPassword) {
 					// 更新密码到后端代码（注释）
 					uni.request({
-						url: 'http://localhost:3000/userCenter/updatePassword',
+						url: 'http://47.108.162.90:3000/userCenter/updatePassword',
 						method: 'POST',
 						data: { userId:this.alldata[0].userId, password: this.newPassword },
 					});

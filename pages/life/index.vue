@@ -65,7 +65,7 @@
 	      },
 	      async getWeather() {
 	        try {
-	          const response = await fetch('http://localhost:3000/weather/city?city=Chengdu');
+	          const response = await fetch('http://47.108.162.90:3000/weather/city?city=Chengdu');
 	          const data = await response.json();
 	
 	          if (data.success) {

@@ -57,7 +57,7 @@
 		methods: {
 			loadData() {
 				uni.request({
-					url: 'http://127.0.0.1:3000/remember/getMemos', // 假设后端获取备忘录列表的接口
+					url: 'http://47.108.162.90:3000/remember/getMemos', // 假设后端获取备忘录列表的接口
 					method: 'POST',
 					data: {
 						user_id: this.userId
@@ -103,7 +103,7 @@
 				this.memos[index].completed = !this.memos[index].completed;
 				// 发送更新状态到后端
 				uni.request({
-				  url: 'http://localhost:3000/remember/updateMemo', // 假设后端更新完成状态的接口
+				  url: 'http://47.108.162.90:3000/remember/updateMemo', // 假设后端更新完成状态的接口
 				  method: 'PUT',
 				  data: {
 				    reminder_id: this.memos[index].id,
@@ -122,7 +122,7 @@
 			deleteMemo(index) {
 				//调用后端接口删除备忘录
 				uni.request({
-				  url: 'http://localhost:3000/remember/deleteMemo', // 假设后端删除备忘录的接口
+				  url: 'http://47.108.162.90:3000/remember/deleteMemo', // 假设后端删除备忘录的接口
 				  method: 'DELETE',
 				  data: {
 				    reminder_id:this.memos[index].id,
