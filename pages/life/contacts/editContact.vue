@@ -87,13 +87,6 @@ export default {
 	  flag:0,
     };
   },
-	onBackPress() {
-		// 在这里实现返回按钮点击后的逻辑
-		uni.redirectTo({
-			url: '/pages/life/contacts/showContact' // 替换为你指定的目标页面路径
-		});
-		return true; // 阻止默认的返回操作
-	},
  //初始化
  onLoad(options) {
    this.contact.contact_id = options.id || null;
@@ -107,6 +100,17 @@ export default {
    this.contact.remark = options.remark || '';
    //uni.showToast({ title: this.contact.contact_id, icon: 'success' });
    this.flag=1;
+ },
+ onBackPress() {
+ 	// 在这里实现返回按钮点击后的逻辑
+	if(flag){
+		const encodedName = encodeURIComponent(this.contact.name);
+		const encodedId = encodeURIComponent(this.contact.contact_id);
+		uni.redirectTo({
+			url: '/pages/life/contacts/showContact?id=${encodedId}&name=${encodedName}' // 替换为你指定的目标页面路径
+		});
+		return true; // 阻止默认的返回操作
+	}
  },
  created() {
    this.userId = getApp().globalData.userId;
