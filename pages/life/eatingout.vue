@@ -186,7 +186,7 @@ export default {
 						this.quantity = this.currentQuantity;
 						
 						uni.request({
-							url: 'http://localhost:3000/diet/addPlan',
+							url: 'http://47.108.162.90:3000/diet/addPlan',
 							method: 'POST',
 							data: {
 								userId: this.userId,

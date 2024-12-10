@@ -85,7 +85,7 @@
 					return;
 				}
 				uni.request({
-					url: `http://localhost:3000/notetake/searchNoteByName`, // 后端接口
+					url: `http://47.108.162.90:3000/notetake/searchNoteByName`, // 后端接口
 					method: 'POST',
 					data: {
 						note_id: this.note_id,
@@ -130,7 +130,7 @@
 				if (this.note_title.trim() && this.note_content.trim()) {
 					// 保存笔记逻辑，模拟后端API交互
 					uni.request({
-						url: 'http://localhost:3000/notetake/editNoteContent', // 假设后端保存笔记的接口
+						url: 'http://47.108.162.90:3000/notetake/editNoteContent', // 假设后端保存笔记的接口
 						method: 'PUT',
 						data: {
 							note_title: this.note_title, // 编辑后的标题

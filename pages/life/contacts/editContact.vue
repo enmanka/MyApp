@@ -117,7 +117,7 @@ export default {
     // 获取联系人信息
   //   fetchContact(id) {
   //     uni.request({
-  //         url: `http://127.0.0.1:3000/contact/getContacts`, // 替换为实际API接口
+  //         url: `http://47.108.162.90:3000/contact/getContacts`, // 替换为实际API接口
   //         method: 'POST',
 		//   data: {
 		//     //user_id: this.userId,
@@ -146,7 +146,7 @@ export default {
 		    return; // 阻止表单提交
 		}
 		uni.request({
-          url: `http://127.0.0.1:3000/contact/editContact`, // 替换为实际API接口
+          url: `http://47.108.162.90:3000/contact/editContact`, // 替换为实际API接口
           method: 'PUT',
           data: {			  
 			  name:this.contact.name,
@@ -205,7 +205,7 @@ export default {
 		uni.showToast({ title: id, icon: 'success' });
         uni.request({
 			
-            url: `http://127.0.0.1:3000/contact/deleteContact`, // 替换为实际API接口
+            url: `http://47.108.162.90:3000/contact/deleteContact`, // 替换为实际API接口
             method: 'DELETE',
 			data:{contact_id:id,},
 			success: (res) =>{if (res.data.code === 200) {

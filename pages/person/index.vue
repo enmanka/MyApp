@@ -48,7 +48,7 @@
 			// //初始数据逻辑： 向后端传入userId， 后端据此返回对应的用户头像、 用户昵称、 用户简介
 			// // 向后端发送 POST 请求，获取用户数据
 			// uni.request({
-			// 	url: 'http://localhost:3000/login', // 后端接口地址
+			// 	url: 'http://47.108.162.90:3000/login', // 后端接口地址
 			// 	method: 'POST',
 			// 	data: {
 			// 		userId: getApp().globalData.userId;

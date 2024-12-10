@@ -47,7 +47,7 @@
 
 					// 调用后端保存备忘信息接口
 					uni.request({
-						url: 'http://127.0.0.1:3000/remember/saveMemo', // 假设后端保存备忘录的接口
+						url: 'http://47.108.162.90:3000/remember/saveMemo', // 假设后端保存备忘录的接口
 						method: 'POST',
 						data: {
 							user_id: getApp().globalData.userId,
