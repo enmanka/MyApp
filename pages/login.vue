@@ -25,13 +25,11 @@
 						<uni-icons type="person" size="20" style="margin-right:16rpx ;color: #C7D4DD;"></uni-icons>
 						<input class="uni-input" focus placeholder="请输入用户名" v-model="submitParams.username" />
 					</view>
-					<view class="items" style="margin-top: 30rpx;justify-content: space-between;">
-					<view class="items">
+					<view class="items" style="margin-top: 18rpx;">
 						<uni-icons type="person" size="20" style="margin-right:16rpx ;color: #C7D4DD;"></uni-icons>
 						<input class="uni-input" focus placeholder="请输入邮箱" v-model="submitParams.email" />
 					</view>
-					</view>
-					<view class="items" style="margin-top: 30rpx;justify-content: space-between;">
+					<view class="items" style="margin-top: 18rpx;justify-content: space-between;">
 						<view class="" style="display: flex;justify-content: center;">
 							<image src="../static/login/lock.png" mode="widthFix"
 								style="width: 40rpx;margin-right:16rpx ;"></image>
@@ -58,14 +56,12 @@
 						<input class="uni-input" placeholder="请输入用户名" v-model="registerParams.username"
 						 @input="checkName" />
 					</view>
-					<view class="items" style="margin-top: 30rpx;justify-content: space-between;">
-					<view class="items">
+					<view class="items" style="margin-top: 18rpx;">
 						<uni-icons type="person" size="20" style="margin-right:16rpx ;color: #C7D4DD;"></uni-icons>
 						<input class="uni-input" placeholder="请输入邮箱" v-model="this.registerParams.email"
 							@input="checkEmail" />
 					</view>
-					</view>
-					<view class="items" style="margin-top: 30rpx;justify-content: space-between;">
+					<view class="items" style="margin-top: 18rpx;justify-content: space-between;">
 						<view class="" style="display: flex;justify-content: center;">
 							<image src="../static/login/lock.png" mode="widthFix"
 								style="width: 40rpx;margin-right:16rpx ;"></image>
@@ -73,7 +69,7 @@
 								v-model="registerParams.password">
 						</view>
 					</view>
-					<view class="items" style="margin-top: 30rpx;justify-content: space-between;">
+					<view class="items" style="margin-top: 18rpx;justify-content: space-between;">
 						<view class="" style="display: flex;justify-content: center;">
 							<image src="../static/login/lock.png" mode="widthFix"
 								style="width: 40rpx;margin-right:16rpx ;"></image>
@@ -81,7 +77,7 @@
 								v-model="registerParams.confirmPassword">
 						</view>
 					</view>
-					<view class="items" style="margin-top: 30rpx;justify-content: space-between;">
+					<view class="items" style="margin-top: 18rpx;justify-content: space-between;">
 						<view class="" style="display: flex;justify-content: center;">
 							<image src="../static/login/lock.png" mode="widthFix"
 								style="width: 40rpx;margin-right:16rpx ;"></image>
@@ -110,7 +106,7 @@
 			<view class="modal-content">
 				<view class="modal-header">
 					<text>{{ modalTitle }}</text>
-					<button @click="closeModal">关闭</button>
+					<button @click="closeModal">X</button>
 				</view>
 				<scroll-view class="modal-body" scroll-y="true">
 					<text>{{ modalContent }}</text>
@@ -431,7 +427,7 @@
 
 	.box2 {
 		width: 100%;
-		padding: 39rpx;
+		padding: 25rpx;
 		display: flex;
 		align-items: center;
 
@@ -543,14 +539,25 @@
 	}
 
 	.modal-content {
-		width: 80%;
-		max-height: 60%;
-		background-color: #fff;
-		border-radius: 10rpx;
-		//overflow: hidden;
-		overflow-y: auto;
-		/* 确保内容可以滚动 */
+	    position: relative; /* 确保子元素（按钮）相对于弹窗内容容器定位 */
+	    width: 95%;
+	    max-height: 60%;
+	    background-color: #fff;
+	    border-radius: 10rpx;
+	    overflow-y: auto; /* 确保内容可以滚动 */
 	}
+	
+	button {
+	    position: absolute; /* 相对 .modal-content 定位 */
+	    top: 0rpx; /* 距离弹窗顶部 */
+	    right: 0rpx; /* 距离弹窗右侧 */
+	    background-color: transparent; /* 背景透明 */
+	    border: none; /* 无边框 */
+	    color: #ff0000; /* 按钮颜色 */
+	    font-size: 30rpx; /* 字体大小 */
+	    cursor: pointer; /* 鼠标悬停效果 */
+	}
+
 
 	.modal-header {
 		padding: 20rpx;
@@ -565,16 +572,5 @@
 		color: #333;
 		height: 400rpx;
 		overflow-y: scroll;
-	}
-
-	button {
-		position: absolute;
-		top: 50rpx;
-		right: 10rpx;
-		background-color: transparent;
-		border: none;
-		color: #ff0000;
-		font-size: 30rpx;
-		cursor: pointer;
 	}
 </style>
