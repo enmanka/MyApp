@@ -117,7 +117,7 @@
 			// 获取联系人信息
 			fetchContacts() {
 			  uni.request({
-			      url: `http://47.108.162.90:3000/contact/getAllContacts`, // 替换为实际API接口
+			      url: `http://localhost:3000/contact/getAllContacts`, // 替换为实际API接口
 			      method: 'POST',
 				  data: {
 				    user_id: this.userId,

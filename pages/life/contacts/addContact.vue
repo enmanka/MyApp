@@ -90,7 +90,7 @@ export default {
 		}
 		uni.request({
 			
-			url: 'http://47.108.162.90:3000/contact/addContact',
+			url: 'http://localhost:3000/contact/addContact',
 			method: 'POST',
 			data: {
 				user_id: this.userID, // 用户ID，

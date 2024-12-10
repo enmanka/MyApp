@@ -132,7 +132,7 @@ export default {
 	fetchNotes() {
 	    // 发送请求到后端获取当前用户的笔记列表
 	    uni.request({
-	        url: `http://47.108.162.90:3000/notetake/getAllNotes`, // 后端获取笔记的接口
+	        url: `http://localhost:3000/notetake/getAllNotes`, // 后端获取笔记的接口
 	        method: 'POST',
 	        data: { user_id: this.userId,}, // 传入用户 ID
 	        success: (res) => {
@@ -153,7 +153,7 @@ export default {
     deleteNote(id) {
         //调用后端接口删除笔记
         uni.request({
-          url: `http://47.108.162.90:3000/notetake/deleteRecord`, // 后端删除笔记的接口
+          url: `http://localhost:3000/notetake/deleteRecord`, // 后端删除笔记的接口
           method: 'DELETE',
 		  data: {note_id:id,},
           success: (res) => {

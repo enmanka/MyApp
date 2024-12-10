@@ -218,7 +218,7 @@
 				this.amount = this.display;
 				// 与后端通信的代码，传入id、userId、日期等数据
 				uni.request({
-					url: 'http://47.108.162.90:3000/account/addRecord',
+					url: 'http://localhost:3000/account/addRecord',
 					method: 'POST',
 					data: {
 						userId: this.userId,

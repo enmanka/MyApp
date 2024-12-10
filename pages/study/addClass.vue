@@ -170,7 +170,7 @@
 
 				//与后端通信的代码（注释掉的部分）
 				uni.request({
-					url: 'http://47.108.162.90:3000/timetable/modifyClass',
+					url: 'http://localhost:3000/timetable/modifyClass',
 					method: 'POST',
 					data: entryData,
 					success: (res) => {

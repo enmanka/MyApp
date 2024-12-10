@@ -70,7 +70,7 @@ export default {
       if (this.note_title.trim() && this.note_content.trim()) {
         // 保存笔记逻辑，模拟后端API交互
         uni.request({
-          url: 'http://47.108.162.90:3000/notetake/saveTextNote',  // 假设后端保存笔记的接口
+          url: 'http://localhost:3000/notetake/saveTextNote',  // 假设后端保存笔记的接口
           method: 'POST',
           data: {
             user_id: this.userId,  // 当前用户ID  
