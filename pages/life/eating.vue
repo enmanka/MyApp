@@ -165,7 +165,7 @@ export default {
 	//与后端连接部分--获取饮食计划
 	fetchPlans() {
 		uni.request({
-		    url: 'http://localhost:3000/diet/getPlans', // 后端接口地址
+		    url: 'http://47.108.162.90:3000/diet/getPlans', // 后端接口地址
 		    method: 'POST',
 		    data: {
 		      userId: this.userId,
@@ -190,7 +190,7 @@ export default {
     },
 	fetchRecords() {
 	    uni.request({
-	        url: 'http://localhost:3000/diet/getRecords', // 后端接口地址
+	        url: 'http://47.108.162.90:3000/diet/getRecords', // 后端接口地址
 	        method: 'POST',
 	        data: {
 	            userId: this.userId,
@@ -229,7 +229,7 @@ export default {
 	// 从服务器删除计划
 	deletePlanFromServer(plan) {
 	    uni.request({
-	        url: 'http://localhost:3000/diet/deletePlan', // 后端接口地址
+	        url: 'http://47.108.162.90:3000/diet/deletePlan', // 后端接口地址
 	        method: 'POST',
 	        data: {
 	          userId: this.userId,
@@ -250,7 +250,7 @@ export default {
 	// 从服务器删除记录
 	deleteRecordFromServer(record) {
 		uni.request({
-		    url: 'http://localhost:3000/diet/deleteRecord', // 后端接口地址
+		    url: 'http://47.108.162.90:3000/diet/deleteRecord', // 后端接口地址
 		    method: 'POST',
 		    data: {
 		      userId: this.userId,
@@ -291,7 +291,7 @@ export default {
 	},
 	editPlan(plan){
 			uni.request({
-				url: 'http://localhost:3000/diet/editPlan',
+				url: 'http://47.108.162.90:3000/diet/editPlan',
 				method: 'POST',
 				data: {
 					userId: this.userId,

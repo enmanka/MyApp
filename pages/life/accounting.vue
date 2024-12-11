@@ -96,7 +96,7 @@ export default {
     },
     fetchRecords() {
       uni.request({
-        url: 'http://localhost:3000/account/getRecords', // 后端接口地址
+        url: 'http://47.108.162.90:3000/account/getRecords', // 后端接口地址
         method: 'POST',
         data: {
           userId: this.userId,
@@ -152,7 +152,7 @@ export default {
       // 删除时根据用户ID和条目ID删除该条目
 	  const recordId = this.records[index].recordId;  // 获取记录 ID
       uni.request({
-        url: 'http://localhost:3000/account/deleteRecord',
+        url: 'http://47.108.162.90:3000/account/deleteRecord',
         method: 'POST',
         data: {
           userId: this.userId,

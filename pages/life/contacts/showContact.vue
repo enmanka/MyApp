@@ -94,7 +94,7 @@
 					icon: 'none'
 				});
 				uni.request({
-					url: `http://localhost:3000/contact/getContacts`, // 替换为实际API接口
+					url: `http://47.108.162.90:3000/contact/getContacts`, // 替换为实际API接口
 					method: 'POST',
 					data: {
 						name: name1,
